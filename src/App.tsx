@@ -333,11 +333,31 @@ function App() {
                   </ToggleGroup>
                 </SheetDescription>
               </SheetHeader>
-              <SheetFooter className="bottom-0 absolute pb-8 flex flex-col justify-center items-center w-[85%]">
+              <SheetFooter className="bottom-0 absolute pb-8 flex flex-col gap-1 justify-center items-center w-[85%]">
+                <GitHubIcon onClick={openGithub} />
+
                 <CardDescription>
                   Desenvolvido com ❤️ por Shouldz
                 </CardDescription>
-                <GitHubIcon onClick={openGithub} />
+                <Separator />
+                <p className="font-extrabold tracking-tight text-sm">
+                  Que tal compartilhar?
+                </p>
+
+                <div className="flex gap-6">
+                  <Button
+                    className="rounded-full w-16 h-16"
+                    onClick={shareOnWhatsApp}
+                  >
+                    <WhatsAppIcon />
+                  </Button>
+                  <Button
+                    className="rounded-full w-16 h-16"
+                    onClick={shareOnTwitter}
+                  >
+                    <XIcon />
+                  </Button>
+                </div>
               </SheetFooter>
             </SheetContent>
           </Sheet>
@@ -445,22 +465,6 @@ function App() {
                 )}
               </CardFooter>
             </Card>
-            <footer className="bottom-0 absolute p-8">
-              <div className="flex justify-between gap-11">
-                <Button
-                  className="rounded-full w-16 h-16"
-                  onClick={shareOnWhatsApp}
-                >
-                  <WhatsAppIcon />
-                </Button>
-                <Button
-                  className="rounded-full w-16 h-16"
-                  onClick={shareOnTwitter}
-                >
-                  <XIcon />
-                </Button>
-              </div>
-            </footer>
           </section>
         </>
       )}
