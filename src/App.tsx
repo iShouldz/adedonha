@@ -248,7 +248,7 @@ function App() {
             </SheetTrigger>
             <SheetContent
               side={"left"}
-              className="flex flex-col gap-11 h-[100vh]"
+              className="flex flex-col gap-11 h-full overflow-y-auto"
             >
               <SheetHeader>
                 <SheetTitle>Exclua as letras indesejadas</SheetTitle>
