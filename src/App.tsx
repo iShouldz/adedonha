@@ -246,7 +246,10 @@ function App() {
                 Rodada:{currentRodada}/{rodadas}
               </SheetTitle>
             </SheetTrigger>
-            <SheetContent side={"left"}>
+            <SheetContent
+              side={"left"}
+              className="flex flex-col gap-11 h-[100vh]"
+            >
               <SheetHeader>
                 <SheetTitle>Exclua as letras indesejadas</SheetTitle>
                 <SheetDescription>
@@ -334,7 +337,7 @@ function App() {
                   </ToggleGroup>
                 </SheetDescription>
               </SheetHeader>
-              <SheetFooter className="bottom-0 absolute pb-8 flex flex-col gap-1 justify-center items-center w-[85%]">
+              <SheetFooter className="top-5 flex w-full flex-col gap-1 justify-center items-center">
                 <GitHubIcon onClick={openGithub} />
 
                 <CardDescription>
