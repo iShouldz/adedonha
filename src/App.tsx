@@ -182,13 +182,19 @@ function App() {
   return (
     <div className="max-sm:bg-[#ced6dc] h-[100vh] max-sm:p-5">
       {!start ? (
-        <div className="w-full h-full flex flex-col justify-center items-center">
+        <div className="w-full h-full flex flex-col gap-2 justify-center items-center">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
             Adedonha
           </h1>
+          <Separator />
+          <p className="font-extrabold tracking-tight text-xl">
+            O classico, só que moderno.
+          </p>
           <img src={stop} />
-          <Button onClick={() => setStart((prevState) => !prevState)}>
-            Start
+          
+
+          <Button onClick={() => setStart((prevState) => !prevState)} className="w-full h-12 text-xl">
+            Começar
           </Button>
         </div>
       ) : historyLetter.length === rodadas + 1 ? (
