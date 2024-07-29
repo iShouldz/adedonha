@@ -5,6 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import MenuIcon from "@mui/icons-material/Menu";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import sirene from "./assets/sirene.mp3";
+import XIcon from "@mui/icons-material/X";
 import {
   Select,
   SelectContent,
@@ -12,10 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -71,6 +74,7 @@ function App() {
       setAlert(true);
     }
   }, [timeLeft]);
+
   const shareOnWhatsApp = () => {
     const text =
       "Venha jogar adedonha da maneira classica so que bem melhor! :) https://adedonha.vercel.app";
@@ -79,6 +83,23 @@ function App() {
     )}`;
     window.open(url, "_blank");
   };
+
+  const shareOnTwitter = () => {
+    const text =
+      "Venha jogar adedonha da maneira classica so que bem melhor! :) https://adedonha.vercel.app";
+    const url = "https://adedonha.vercel.app";
+    const hashtags = "adedonha,sharing";
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      text
+    )}&url=${encodeURIComponent(url)}&hashtags=${hashtags}}`;
+
+    window.open(twitterUrl, "_blank");
+  };
+
+  const openGithub = () => {
+    window.open("https://github.com/iShouldz", "_blank");
+  };
+
   const handleSelectChange = (value: string) => {
     setTimerValue(Number(value));
   };
@@ -283,14 +304,14 @@ function App() {
                   </ToggleGroup>
                 </SheetDescription>
               </SheetHeader>
+              <SheetFooter className="bottom-0 absolute pb-8 flex flex-col justify-center items-center w-[85%]">
+                <CardDescription>
+                  Desenvolvido com ❤️ por Shouldz
+                </CardDescription>
+                <GitHubIcon onClick={openGithub} />
+              </SheetFooter>
             </SheetContent>
           </Sheet>
-          <a
-            href="https://api.whatsapp.com/send?text=Confira%20este%20site:%20https://adedonha.vercel.app"
-            target="_blank"
-          >
-            Compartilhar no WhatsApp
-          </a>
 
           <section className="w-full h-full flex flex-col justify-center items-center gap-4">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
@@ -394,12 +415,22 @@ function App() {
                 )}
               </CardFooter>
             </Card>
-            <Button
-              className="rounded-full w-16 h-16"
-              onClick={shareOnWhatsApp}
-            >
-              <WhatsAppIcon />
-            </Button>
+            <footer className="bottom-0 absolute p-8">
+              <div className="flex justify-between gap-11">
+                <Button
+                  className="rounded-full w-16 h-16"
+                  onClick={shareOnWhatsApp}
+                >
+                  <WhatsAppIcon />
+                </Button>
+                <Button
+                  className="rounded-full w-16 h-16"
+                  onClick={shareOnTwitter}
+                >
+                  <XIcon />
+                </Button>
+              </div>
+            </footer>
           </section>
         </>
       )}
