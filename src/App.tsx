@@ -284,6 +284,7 @@ function App() {
               <ToggleGroupItem
                 key={"letter"}
                 value="valor"
+                className="w-1/4 h-[9vh] bg-gray-500 text-white text-2xl"
                 aria-label="Toggle bold"
               >
                 {randomLetter}
