@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Button } from "./components/ui/button";
 import { letras } from "./utils/const.utils";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
@@ -38,11 +38,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "./components/ui/input";
+
+interface PlayerProps {
+  name: string;
+  points: number;
+}
+
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
   const [historyLetter, setHistoryLetter] = useState<string[]>([]);
   const [excludeLetters, setExcludeLetters] = useState<string[]>([]);
-  const [timerValue, setTimerValue] = useState<number>(30);
+  const [timerValue, setTimerValue] = useState<number>(2);
   const [timeLeft, setTimeLeft] = useState(-1);
   const [start, setStart] = useState(false);
   const [alert, setAlert] = useState(false);
@@ -90,6 +97,52 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
+  };
+
+  const [numPlayers, setNumPlayers] = useState<number>(1);
+  const [players, setPlayers] = useState<PlayerProps[]>([
+    { name: "", points: 0 },
+  ]);
+
+  const handleNumPlayersChange = (valueS: string) => {
+    const value = Number(valueS);
+    setNumPlayers(value);
+    setPlayers(
+      Array.from({ length: value }, (_, index) => ({
+        name: `Player ${index + 1}`,
+        points: 0,
+      }))
+    );
+  };
+
+  const handleScoreChange = (index: number, value: number) => {
+    const newPlayers = [...players];
+    newPlayers[index].points = value;
+    setPlayers(newPlayers);
+  };
+
+  const renderInputs = () => {
+    return players.map((player, index) => (
+      <div>
+        <label>Player {index}</label>
+        <div key={index} className="flex gap-1">
+          <Input
+            type="number"
+            value={player.points}
+            onChange={(e) => handleScoreChange(index, Number(e.target.value))}
+            className="input-class"
+          />
+          <Button onClick={() => incrementScore(index, 5)}>+5</Button>
+          <Button onClick={() => incrementScore(index, 10)}>+10</Button>
+        </div>
+      </div>
+    ));
+  };
+
+  const incrementScore = (index: number, increment: number) => {
+    const newPlayers = [...players];
+    newPlayers[index].points += increment;
+    setPlayers(newPlayers);
   };
 
   return (
@@ -167,9 +220,14 @@ function App() {
                         <SelectValue placeholder="Rodadas" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="2">2 rodadas</SelectItem>
                         <SelectItem value="3">3 rodadas</SelectItem>
+                        <SelectItem value="4">4 rodadas</SelectItem>
                         <SelectItem value="5">5 rodadas</SelectItem>
+                        <SelectItem value="6">6 rodadas</SelectItem>
                         <SelectItem value="7">7 rodadas</SelectItem>
+                        <SelectItem value="8">8 rodadas</SelectItem>
+                        <SelectItem value="9">9 rodadas</SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -187,6 +245,26 @@ function App() {
                         <SelectItem value="30">30 segundos</SelectItem>
                         <SelectItem value="60">60 segundos</SelectItem>
                         <SelectItem value="90">90 segundos</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Separator />
+                    <p>Selecione o número de jogadores</p>
+
+                    <Select
+                      disabled={timeLeft !== -1}
+                      onValueChange={handleNumPlayersChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Jogadores" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1</SelectItem>
+                        <SelectItem value="2">2</SelectItem>
+                        <SelectItem value="3">3</SelectItem>
+                        <SelectItem value="4">4</SelectItem>
+                        <SelectItem value="5">5</SelectItem>
+                        <SelectItem value="6">6</SelectItem>
                       </SelectContent>
                     </Select>
                   </ToggleGroup>
@@ -208,12 +286,12 @@ function App() {
               <ToggleGroupItem
                 key={"letter"}
                 value="valor"
+                
                 aria-label="Toggle bold"
               >
                 {randomLetter}
               </ToggleGroupItem>
             </ToggleGroup>
-            <h1></h1>
 
             <AlertDialog open={alert} onOpenChange={setAlert}>
               <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
@@ -236,7 +314,10 @@ function App() {
                   {timeLeft > 0 && (
                     <>
                       <h2>Contagem Regressiva: {timeLeft} segundos</h2>
-                      <Progress value={timeLeft} />
+                      <Progress
+                        value={(timeLeft / timerValue) * 100}
+                        max={100}
+                      />
                     </>
                   )}
 
@@ -259,15 +340,21 @@ function App() {
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
+                {timeLeft === 0 && (
+                  <div className="score-inputs">{renderInputs()}</div>
+                )}
               </CardContent>
               <CardFooter className="flex gap-2 w-full justify-center">
                 <Button
                   onClick={getRandomLetter}
                   disabled={historyLetter.length === 25 || timeLeft > 0}
                 >
-                  Gerar aleatorio
+                  Gerar letra
                 </Button>
                 <Button onClick={reset}>Reiniciar jogo</Button>
+                <Button onClick={() => setTimeLeft(0)} variant={"destructive"}>
+                  Stop!
+                </Button>
               </CardFooter>
             </Card>
           </section>
