@@ -99,14 +99,12 @@ function App() {
     setCurrentRodada(0);
   };
 
-  const [numPlayers, setNumPlayers] = useState<number>(1);
   const [players, setPlayers] = useState<PlayerProps[]>([
     { name: "", points: 0 },
   ]);
 
   const handleNumPlayersChange = (valueS: string) => {
     const value = Number(valueS);
-    setNumPlayers(value);
     setPlayers(
       Array.from({ length: value }, (_, index) => ({
         name: `Player ${index + 1}`,
