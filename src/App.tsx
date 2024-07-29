@@ -282,21 +282,22 @@ function App() {
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
               Adedonha
             </h1>
-
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              className="flex flex-wrap w-full  gap-2"
-            >
-              <ToggleGroupItem
-                key={"letter"}
-                value="valor"
-                className="w-1/4 h-[9vh] bg-gray-500 text-white text-2xl"
-                aria-label="Toggle bold"
+            {currentRodada > 0 && (
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                className="flex flex-wrap w-full  gap-2"
               >
-                {randomLetter}
-              </ToggleGroupItem>
-            </ToggleGroup>
+                <ToggleGroupItem
+                  key={"letter"}
+                  value="valor"
+                  className="w-1/4 h-[9vh] bg-gray-500 text-white text-2xl"
+                  aria-label="Toggle bold"
+                >
+                  {randomLetter}
+                </ToggleGroupItem>
+              </ToggleGroup>
+            )}
 
             <AlertDialog open={alert} onOpenChange={setAlert}>
               <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
