@@ -49,7 +49,7 @@ function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
   const [historyLetter, setHistoryLetter] = useState<string[]>([]);
   const [excludeLetters, setExcludeLetters] = useState<string[]>([]);
-  const [timerValue, setTimerValue] = useState<number>(2);
+  const [timerValue, setTimerValue] = useState<number>(30);
   const [timeLeft, setTimeLeft] = useState(-1);
   const [start, setStart] = useState(false);
   const [alert, setAlert] = useState(false);
