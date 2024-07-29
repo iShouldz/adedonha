@@ -3,6 +3,7 @@ import { Button } from "./components/ui/button";
 import { letras } from "./utils/const.utils";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import MenuIcon from "@mui/icons-material/Menu";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import sirene from "./assets/sirene.mp3";
 import {
   Select,
@@ -70,7 +71,14 @@ function App() {
       setAlert(true);
     }
   }, [timeLeft]);
-
+  const shareOnWhatsApp = () => {
+    const text =
+      "Venha jogar adedonha da maneira classica so que bem melhor! :) https://adedonha.vercel.app";
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+      text
+    )}`;
+    window.open(url, "_blank");
+  };
   const handleSelectChange = (value: string) => {
     setTimerValue(Number(value));
   };
@@ -277,11 +285,18 @@ function App() {
               </SheetHeader>
             </SheetContent>
           </Sheet>
+          <a
+            href="https://api.whatsapp.com/send?text=Confira%20este%20site:%20https://adedonha.vercel.app"
+            target="_blank"
+          >
+            Compartilhar no WhatsApp
+          </a>
 
-          <section className="w-full h-full flex flex-col justify-center items-center gap-2">
+          <section className="w-full h-full flex flex-col justify-center items-center gap-4">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
               Adedonha
             </h1>
+            <Separator />
             {currentRodada > 0 && (
               <ToggleGroup
                 type="single"
@@ -298,7 +313,6 @@ function App() {
                 </ToggleGroupItem>
               </ToggleGroup>
             )}
-
             <AlertDialog open={alert} onOpenChange={setAlert}>
               <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
                 <AlertDialogHeader>
@@ -312,7 +326,6 @@ function App() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-
             <Card className="w-full">
               <CardHeader>
                 <CardTitle className="flex items-center w-full justify-between">
@@ -381,6 +394,12 @@ function App() {
                 )}
               </CardFooter>
             </Card>
+            <Button
+              className="rounded-full w-16 h-16"
+              onClick={shareOnWhatsApp}
+            >
+              <WhatsAppIcon />
+            </Button>
           </section>
         </>
       )}
