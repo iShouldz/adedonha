@@ -3,7 +3,7 @@ import { Button } from "./components/ui/button";
 import { letras } from "./utils/const.utils";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import MenuIcon from "@mui/icons-material/Menu";
-import sirene from './assets/sirene.mp3'
+import sirene from "./assets/sirene.mp3";
 import {
   Select,
   SelectContent,
@@ -40,6 +40,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "./components/ui/input";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 
 interface PlayerProps {
   name: string;
@@ -56,8 +58,8 @@ function App() {
   const [alert, setAlert] = useState(false);
   const [rodadas, setRodadas] = useState(3);
   const [currentRodada, setCurrentRodada] = useState(0);
-
-  const audio = new Audio(sirene)
+  const [volumeState, setVolumeState] = useState(false);
+  const audio = new Audio(sirene);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -115,7 +117,9 @@ function App() {
       }))
     );
   };
-  {alert && audio.play()}
+  {
+    alert && volumeState && audio.play();
+  }
   const handleScoreChange = (index: number, value: number) => {
     const newPlayers = [...players];
     newPlayers[index].points = value;
@@ -179,7 +183,7 @@ function App() {
           <Sheet>
             <SheetTrigger className="flex justify-between w-full items-center">
               <MenuIcon />
-              <SheetTitle>
+              <SheetTitle className="flex items-center gap-2">
                 Rodada:{currentRodada}/{rodadas}
               </SheetTitle>
             </SheetTrigger>
@@ -310,7 +314,18 @@ function App() {
 
             <Card className="w-full">
               <CardHeader>
-                <CardTitle>Letras que já sairam:</CardTitle>
+                <CardTitle className="flex items-center w-full justify-between">
+                  Letras que já sairam:{" "}
+                  {volumeState ? (
+                    <VolumeUpIcon
+                      onClick={() => setVolumeState((prevState) => !prevState)}
+                    />
+                  ) : (
+                    <VolumeOffIcon
+                      onClick={() => setVolumeState((prevState) => !prevState)}
+                    />
+                  )}
+                </CardTitle>
                 <CardDescription>
                   {timeLeft > 0 && (
                     <>
