@@ -284,7 +284,6 @@ function App() {
               <ToggleGroupItem
                 key={"letter"}
                 value="valor"
-                
                 aria-label="Toggle bold"
               >
                 {randomLetter}
@@ -349,10 +348,17 @@ function App() {
                 >
                   Gerar letra
                 </Button>
-                <Button onClick={reset}>Reiniciar jogo</Button>
-                <Button onClick={() => setTimeLeft(0)} variant={"destructive"}>
-                  Stop!
-                </Button>
+                {currentRodada > 0 && (
+                  <>
+                    <Button onClick={reset}>Reiniciar jogo</Button>
+                    <Button
+                      onClick={() => setTimeLeft(0)}
+                      variant={"destructive"}
+                    >
+                      Stop!
+                    </Button>
+                  </>
+                )}
               </CardFooter>
             </Card>
           </section>
