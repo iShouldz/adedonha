@@ -172,7 +172,7 @@ function App() {
       </div>
     ));
   };
-
+  console.log(players);
   const incrementScore = (index: number, increment: number) => {
     const newPlayers = [...players];
     newPlayers[index].points += increment;
@@ -196,8 +196,16 @@ function App() {
           <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
             <AlertDialogHeader>
               <AlertDialogTitle>Fim de jogo</AlertDialogTitle>
-              <AlertDialogDescription>
-                {rodadas} atigidas
+              <AlertDialogDescription className="flex flex-col gap-3">
+                {rodadas} rodadas atigidas
+                <Separator />
+                <div className="flex flex-col items-start">
+                  {players.map((item) => (
+                    <p>
+                      Player {item.name}: {item.points} pontos
+                    </p>
+                  ))}
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -408,6 +416,7 @@ function App() {
                     <Button
                       onClick={() => setTimeLeft(0)}
                       variant={"destructive"}
+                      disabled={timeLeft === 0}
                     >
                       Stop!
                     </Button>
