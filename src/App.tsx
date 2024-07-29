@@ -3,6 +3,7 @@ import { Button } from "./components/ui/button";
 import { letras } from "./utils/const.utils";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import MenuIcon from "@mui/icons-material/Menu";
+import sirene from './assets/sirene.mp3'
 import {
   Select,
   SelectContent,
@@ -49,12 +50,14 @@ function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
   const [historyLetter, setHistoryLetter] = useState<string[]>([]);
   const [excludeLetters, setExcludeLetters] = useState<string[]>([]);
-  const [timerValue, setTimerValue] = useState<number>(30);
+  const [timerValue, setTimerValue] = useState<number>(1);
   const [timeLeft, setTimeLeft] = useState(-1);
   const [start, setStart] = useState(false);
   const [alert, setAlert] = useState(false);
   const [rodadas, setRodadas] = useState(3);
   const [currentRodada, setCurrentRodada] = useState(0);
+
+  const audio = new Audio(sirene)
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -112,7 +115,7 @@ function App() {
       }))
     );
   };
-
+  {alert && audio.play()}
   const handleScoreChange = (index: number, value: number) => {
     const newPlayers = [...players];
     newPlayers[index].points = value;
