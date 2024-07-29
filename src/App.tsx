@@ -13,6 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import {
   Sheet,
@@ -23,6 +28,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./components/ui/sheet";
+import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -400,10 +406,17 @@ function App() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
             <Card className="w-full">
               <CardHeader>
                 <CardTitle className="flex items-center w-full justify-between">
-                  Letras que já sairam:{" "}
+                  Letras que já sairam: 
+                  <Popover>
+                    <PopoverTrigger><LeaderboardIcon /></PopoverTrigger>
+                    <PopoverContent>
+                      Em desenvolvimento. Em breve ;)
+                    </PopoverContent>
+                  </Popover>
                   {volumeState ? (
                     <VolumeUpIcon
                       onClick={() => setVolumeState((prevState) => !prevState)}
