@@ -169,6 +169,7 @@ function App() {
         <input
           type="text"
           value={player.name}
+          placeholder="Digite seu nome"
           onChange={(e) => handleNameChange(index, e.target.value)}
           className="outline-none input-no-outline"
         />
