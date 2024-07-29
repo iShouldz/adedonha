@@ -209,8 +209,8 @@ function App() {
                     ))}
 
                     <Separator />
-                    <p>Selecione o timer da rodada</p>
 
+                    <p>Selecione o número de rodadas</p>
                     <Select
                       disabled={timeLeft !== -1}
                       onValueChange={(value: string) =>
@@ -233,7 +233,7 @@ function App() {
                     </Select>
 
                     <Separator />
-                    <p>Selecione o número de rodadas</p>
+                    <p>Selecione o timer da rodada</p>
 
                     <Select
                       disabled={timeLeft !== -1}
