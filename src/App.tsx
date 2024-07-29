@@ -155,11 +155,24 @@ function App() {
     setPlayers(newPlayers);
   };
 
+  const handleNameChange = (index: number, newName: string) => {
+    const updatedPlayers = players.map((player, i) =>
+      i === index ? { ...player, name: newName } : player
+    );
+    setPlayers(updatedPlayers);
+  };
+
   const renderInputs = () => {
     return players.map((player, index) => (
-      <div>
-        <label>Player {index}</label>
-        <div key={index} className="flex gap-1">
+      <div key={index} className="player-input">
+        {/* <label>Player {index + 1}</label> */}
+        <input
+          type="text"
+          value={player.name}
+          onChange={(e) => handleNameChange(index, e.target.value)}
+          className="outline-none input-no-outline"
+        />
+        <div className="flex gap-1">
           <Input
             type="number"
             value={player.points}
@@ -191,9 +204,11 @@ function App() {
             O classico, só que moderno.
           </p>
           <img src={stop} />
-          
 
-          <Button onClick={() => setStart((prevState) => !prevState)} className="w-full h-12 text-xl">
+          <Button
+            onClick={() => setStart((prevState) => !prevState)}
+            className="w-full h-12 text-xl"
+          >
             Começar
           </Button>
         </div>
@@ -208,7 +223,7 @@ function App() {
                 <div className="flex flex-col items-start">
                   {players.map((item) => (
                     <p>
-                      Player {item.name}: {item.points} pontos
+                      {item.name}: {item.points} pontos
                     </p>
                   ))}
                 </div>
