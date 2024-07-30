@@ -521,11 +521,11 @@ function App() {
                     Placares dos jogos anteriores
                     {leaderBoard.map((round, roundIndex) => (
                       <div key={roundIndex} className="mb-4">
-                        <h3 className="text-lg font-bold">
+                        <p className="text-lg font-bold">
                           Jogo {roundIndex + 1}
-                        </h3>
+                        </p>
                         {round.map((player) => (
-                          <p>
+                          <p key={Math.random()}>
                             {player.name} - {player.points}
                           </p>
                         ))}
