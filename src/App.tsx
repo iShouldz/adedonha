@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "./components/ui/button";
-import { letras } from "./utils/const.utils";
+import { letras, temas } from "./utils/const.utils";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import MenuIcon from "@mui/icons-material/Menu";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -52,6 +52,7 @@ import {
 import { Input } from "./components/ui/input";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import { Badge } from "./components/ui/badge";
 
 interface PlayerProps {
   name: string;
@@ -73,6 +74,9 @@ function App() {
   const [players, setPlayers] = useState<PlayerProps[]>([
     { name: "", points: 0, currentPoints: 0 },
   ]);
+  const [modalSugest, setModalSugest] = useState(false);
+  const [themeSugest, setThemeSugest] = useState<string[]>([]);
+  const [themeExclude, setThemeExclude] = useState<string[]>([]);
   const audio = new Audio(sirene);
 
   useEffect(() => {
@@ -134,6 +138,7 @@ function App() {
     }
   };
 
+  console.log(themeSugest);
   const reset = () => {
     setRandomLetter("");
     setHistoryLetter([]);
@@ -215,6 +220,26 @@ function App() {
         </div>
       </div>
     ));
+  };
+
+  const getRandomThemes = (quantity: number) => {
+    console.log(quantity);
+    let increment = 0;
+    let index = Math.floor(Math.random() * 99);
+    let newThemes: string[] = [];
+
+    while (increment !== quantity) {
+      console.log(index);
+      console.log(temas[index]);
+
+      if (!themeExclude.includes(temas[index])) {
+        newThemes.push(temas[index]);
+        increment++;
+      }
+      index = Math.floor(Math.random() * 99);
+    }
+
+    setThemeSugest((prevState) => [...prevState, ...newThemes]);
   };
 
   {
@@ -362,6 +387,54 @@ function App() {
                         <SelectItem value="6">6</SelectItem>
                       </SelectContent>
                     </Select>
+
+                    <Separator />
+                    <Button
+                      onClick={() => setModalSugest((prevState) => !prevState)}
+                    >
+                      Sugestões de temas
+                    </Button>
+                    <AlertDialog
+                      open={modalSugest}
+                      onOpenChange={setModalSugest}
+                    >
+                      <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Sugestões de temas
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="flex flex-col gap-3">
+                            <div>
+                              {themeSugest.map((tema) => (
+                                <Badge variant="default">{tema}</Badge>
+                              ))}
+                            </div>
+
+                            <Separator />
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter className="flex flex-col gap-2">
+                          <Button onClick={() => getRandomThemes(7)}>
+                            Gerar
+                          </Button>
+                          <Button
+                            onClick={() => setThemeSugest([])}
+                            variant={"secondary"}
+                          >
+                            Limpar sugestões
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            onClick={() =>
+                              setModalSugest((prevState) => !prevState)
+                            }
+                          >
+                            Fechar
+                          </Button>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </ToggleGroup>
                 </SheetDescription>
               </SheetHeader>
