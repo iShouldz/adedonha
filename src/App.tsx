@@ -13,11 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import GitHubIcon from "@mui/icons-material/GitHub";
 import {
   Sheet,
@@ -55,6 +51,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import { Badge } from "./components/ui/badge";
 
 interface PlayerProps {
+  id?: number;
   name: string;
   points: number;
   currentPoints: number;
@@ -72,11 +69,13 @@ function App() {
   const [currentRodada, setCurrentRodada] = useState(0);
   const [volumeState, setVolumeState] = useState(false);
   const [players, setPlayers] = useState<PlayerProps[]>([
-    { name: "", points: 0, currentPoints: 0 },
+    { id: 0, name: "", points: 0, currentPoints: 0 },
   ]);
   const [modalSugest, setModalSugest] = useState(false);
   const [themeSugest, setThemeSugest] = useState<string[]>([]);
   const [themeExclude] = useState<string[]>([]);
+  const [leaderBoardModal, setLeaderBoardModal] = useState<boolean>(false);
+  const [leaderBoard, setLeaderBoard] = useState<PlayerProps[][]>([]);
   const audio = new Audio(sirene);
 
   useEffect(() => {
@@ -138,7 +137,7 @@ function App() {
     }
   };
 
-  console.log(themeSugest);
+  console.log(players);
   const reset = () => {
     setRandomLetter("");
     setHistoryLetter([]);
@@ -146,6 +145,7 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
+    setLeaderBoard((prevState) => [...prevState, players]);
     setPlayers([{ name: "", points: 0, currentPoints: 0 }]);
   };
 
@@ -180,45 +180,55 @@ function App() {
   };
 
   const handleClick = (index: number) => {
-    handleScorePermaChange(index);
+    let count = 0;
+    while (index != count) {
+      handleScorePermaChange(count);
+      count++;
+    }
     getRandomLetter();
   };
 
   const renderInputs = () => {
     return players.map((player, index) => (
-      <div key={index} className="player-input flex flex-col gap-2">
-        <input
-          type="text"
-          value={player.name}
-          placeholder="Digite seu nome"
-          onChange={(e) => handleNameChange(index, e.target.value)}
-          className="outline-none input-no-outline"
-        />
-        <div className="flex gap-1">
-          <Input
-            type="number"
-            onChange={(e) => handleScoreChange(index, Number(e.target.value))}
-            placeholder="Digite seus pontos"
-            className="input-class"
-          />
-        </div>
-        <Separator />
-        <div className="flex w-full gap-2 ">
-          <Button onClick={() => handleClick(index)}>Gerar próximo</Button>
-          {currentRodada > 0 && (
-            <>
-              <Button onClick={reset}>Reiniciar jogo</Button>
-              <Button
-                onClick={() => setTimeLeft(0)}
-                variant={"destructive"}
-                disabled={timeLeft === 0}
-              >
-                Stop!
+      <>
+        <div key={index} className="player-input flex flex-col gap-2">
+          {index === 0 && (
+            <div className="flex w-full gap-2 ">
+              <Button onClick={() => handleClick(players.length)}>
+                Gerar próximo
               </Button>
-            </>
+              {currentRodada > 0 && (
+                <>
+                  <Button onClick={reset}>Reiniciar jogo</Button>
+                  <Button
+                    onClick={() => setTimeLeft(0)}
+                    variant={"destructive"}
+                    disabled={timeLeft === 0}
+                  >
+                    Stop!
+                  </Button>
+                </>
+              )}
+            </div>
           )}
+          <input
+            type="text"
+            value={player.name}
+            placeholder="Digite seu nome"
+            onChange={(e) => handleNameChange(index, e.target.value)}
+            className="outline-none input-no-outline"
+          />
+          <div className="flex gap-1">
+            <Input
+              type="number"
+              onChange={(e) => handleScoreChange(index, Number(e.target.value))}
+              placeholder="Digite seus pontos"
+              className="input-class"
+            />
+          </div>
+          <Separator />
         </div>
-      </div>
+      </>
     ));
   };
 
@@ -503,18 +513,47 @@ function App() {
               </AlertDialogContent>
             </AlertDialog>
 
+            <AlertDialog
+              open={leaderBoardModal}
+              onOpenChange={setLeaderBoardModal}
+            >
+              <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Leaderboard</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Placares dos jogos anteriores
+                    {leaderBoard.map((round, roundIndex) => (
+                      <div key={roundIndex} className="mb-4">
+                        <h3 className="text-lg font-bold">
+                          Jogo {roundIndex + 1}
+                        </h3>
+                        {round.map((player) => (
+                          <p>
+                            {player.name} - {player.points}
+                          </p>
+                        ))}
+                      </div>
+                    ))}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter>
+                  <AlertDialogAction onClick={() => setLeaderBoardModal(false)}>
+                    Fechar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <Card className="w-full">
               <CardHeader>
                 <CardTitle className="flex items-center w-full justify-between">
                   Letras que já sairam:
-                  <Popover>
-                    <PopoverTrigger>
-                      <LeaderboardIcon />
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      Em desenvolvimento. Em breve ;)
-                    </PopoverContent>
-                  </Popover>
+                  <LeaderboardIcon
+                    onClick={() =>
+                      setLeaderBoardModal((prevState) => !prevState)
+                    }
+                  />
                   {volumeState ? (
                     <VolumeUpIcon
                       onClick={() => setVolumeState((prevState) => !prevState)}
