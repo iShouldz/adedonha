@@ -76,7 +76,7 @@ function App() {
   ]);
   const [modalSugest, setModalSugest] = useState(false);
   const [themeSugest, setThemeSugest] = useState<string[]>([]);
-  const [themeExclude, setThemeExclude] = useState<string[]>([]);
+  const [themeExclude] = useState<string[]>([]);
   const audio = new Audio(sirene);
 
   useEffect(() => {
