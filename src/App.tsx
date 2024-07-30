@@ -390,6 +390,7 @@ function App() {
 
                     <Separator />
                     <Button
+                      className="w-full"
                       onClick={() => setModalSugest((prevState) => !prevState)}
                     >
                       Sugestões de temas
@@ -400,7 +401,7 @@ function App() {
                     >
                       <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>
+                          <AlertDialogTitle className="w-full">
                             Sugestões de temas
                           </AlertDialogTitle>
                           <AlertDialogDescription className="flex flex-col gap-3">
