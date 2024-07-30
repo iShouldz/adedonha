@@ -124,9 +124,7 @@ function App() {
       historyLetter.includes(letras[index]) ||
       excludeLetters.includes(letras[index])
     ) {
-      console.log(`Repetiu, rodando novamente: ${letras[index]}`);
       index = Math.floor(Math.random() * 25);
-      console.log(`Novo valor: ${letras[index]}`);
     }
 
     setRandomLetter(letras[index]);
@@ -137,7 +135,6 @@ function App() {
     }
   };
 
-  console.log(players);
   const reset = () => {
     setRandomLetter("");
     setHistoryLetter([]);
