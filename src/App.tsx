@@ -56,6 +56,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 interface PlayerProps {
   name: string;
   points: number;
+  currentPoints: number;
 }
 
 function App() {
@@ -69,6 +70,9 @@ function App() {
   const [rodadas, setRodadas] = useState(3);
   const [currentRodada, setCurrentRodada] = useState(0);
   const [volumeState, setVolumeState] = useState(false);
+  const [players, setPlayers] = useState<PlayerProps[]>([
+    { name: "", points: 0, currentPoints: 0 },
+  ]);
   const audio = new Audio(sirene);
 
   useEffect(() => {
@@ -137,11 +141,8 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
+    setPlayers([{ name: "", points: 0, currentPoints: 0 }]);
   };
-
-  const [players, setPlayers] = useState<PlayerProps[]>([
-    { name: "", points: 0 },
-  ]);
 
   const handleNumPlayersChange = (valueS: string) => {
     const value = Number(valueS);
@@ -149,15 +150,20 @@ function App() {
       Array.from({ length: value }, (_, index) => ({
         name: `Player ${index + 1}`,
         points: 0,
+        currentPoints: 0,
       }))
     );
   };
-  {
-    alert && volumeState && audio.play();
-  }
+
   const handleScoreChange = (index: number, value: number) => {
     const newPlayers = [...players];
-    newPlayers[index].points = value;
+    newPlayers[index].currentPoints = value;
+    setPlayers(newPlayers);
+  };
+
+  const handleScorePermaChange = (index: number) => {
+    const newPlayers = [...players];
+    newPlayers[index].points += newPlayers[index].currentPoints;
     setPlayers(newPlayers);
   };
 
@@ -168,10 +174,14 @@ function App() {
     setPlayers(updatedPlayers);
   };
 
+  const handleClick = (index: number) => {
+    handleScorePermaChange(index);
+    getRandomLetter();
+  };
+
   const renderInputs = () => {
     return players.map((player, index) => (
-      <div key={index} className="player-input">
-        {/* <label>Player {index + 1}</label> */}
+      <div key={index} className="player-input flex flex-col gap-2">
         <input
           type="text"
           value={player.name}
@@ -182,22 +192,34 @@ function App() {
         <div className="flex gap-1">
           <Input
             type="number"
-            value={player.points}
             onChange={(e) => handleScoreChange(index, Number(e.target.value))}
+            placeholder="Digite seus pontos"
             className="input-class"
           />
-          <Button onClick={() => incrementScore(index, 5)}>+5</Button>
-          <Button onClick={() => incrementScore(index, 10)}>+10</Button>
+        </div>
+        <Separator />
+        <div className="flex w-full gap-2 ">
+          <Button onClick={() => handleClick(index)}>Gerar próximo</Button>
+          {currentRodada > 0 && (
+            <>
+              <Button onClick={reset}>Reiniciar jogo</Button>
+              <Button
+                onClick={() => setTimeLeft(0)}
+                variant={"destructive"}
+                disabled={timeLeft === 0}
+              >
+                Stop!
+              </Button>
+            </>
+          )}
         </div>
       </div>
     ));
   };
-  console.log(players);
-  const incrementScore = (index: number, increment: number) => {
-    const newPlayers = [...players];
-    newPlayers[index].points += increment;
-    setPlayers(newPlayers);
-  };
+
+  {
+    alert && volumeState && audio.play();
+  }
 
   return (
     <div className="max-sm:bg-[#ced6dc] h-[100vh] max-sm:p-5">
@@ -410,9 +432,11 @@ function App() {
             <Card className="w-full">
               <CardHeader>
                 <CardTitle className="flex items-center w-full justify-between">
-                  Letras que já sairam: 
+                  Letras que já sairam:
                   <Popover>
-                    <PopoverTrigger><LeaderboardIcon /></PopoverTrigger>
+                    <PopoverTrigger>
+                      <LeaderboardIcon />
+                    </PopoverTrigger>
                     <PopoverContent>
                       Em desenvolvimento. Em breve ;)
                     </PopoverContent>
@@ -462,13 +486,15 @@ function App() {
                 )}
               </CardContent>
               <CardFooter className="flex gap-2 w-full justify-center">
-                <Button
-                  onClick={getRandomLetter}
-                  disabled={historyLetter.length === 25 || timeLeft > 0}
-                >
-                  Gerar letra
-                </Button>
-                {currentRodada > 0 && (
+                {currentRodada === 0 && (
+                  <Button
+                    onClick={getRandomLetter}
+                    disabled={historyLetter.length === 25 || timeLeft > 0}
+                  >
+                    Gerar letra
+                  </Button>
+                )}
+                {currentRodada > 0 && timeLeft !== 0 && (
                   <>
                     <Button onClick={reset}>Reiniciar jogo</Button>
                     <Button
