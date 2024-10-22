@@ -49,6 +49,7 @@ import { Input } from "./components/ui/input";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import { Badge } from "./components/ui/badge";
+import PanToolOutlinedIcon from "@mui/icons-material/PanToolOutlined";
 
 interface PlayerProps {
   id?: number;
@@ -77,6 +78,7 @@ function App() {
   const [leaderBoardModal, setLeaderBoardModal] = useState<boolean>(false);
   const [leaderBoard, setLeaderBoard] = useState<PlayerProps[][]>([]);
   const audio = new Audio(sirene);
+  // const text = "Letra x";
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -87,6 +89,27 @@ function App() {
       setAlert(true);
     }
   }, [timeLeft]);
+
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    const u = new SpeechSynthesisUtterance(`Letra sorteada: ` + randomLetter);
+    const voices = synth.getVoices();
+
+    if (randomLetter !== undefined || randomLetter !== "") {
+      u.volume = 1;
+      u.voice =
+        voices.find(
+          (v) => v.name === "Microsoft Maria - Portuguese (Brazil)"
+        ) || null;
+      if (volumeState) {
+        synth.speak(u);
+      }
+    }
+
+    return () => {
+      synth.cancel();
+    };
+  }, [randomLetter]);
 
   const shareOnWhatsApp = () => {
     const text =
@@ -202,7 +225,8 @@ function App() {
                     variant={"destructive"}
                     disabled={timeLeft === 0}
                   >
-                    Stop!
+                    {/* Stop! */}
+                    <PanToolOutlinedIcon />
                   </Button>
                 </>
               )}
@@ -318,21 +342,27 @@ function App() {
                     variant="outline"
                     className="flex flex-wrap w-full justify-between gap-2"
                   >
-                    {letras.map((letter) => (
-                      <ToggleGroupItem
-                        key={letter}
-                        value={letter}
-                        aria-label="Toggle bold"
-                        onClick={() =>
-                          setExcludeLetters((prevState) => [
-                            ...prevState,
-                            letter,
-                          ])
-                        }
-                      >
-                        {letter}
-                      </ToggleGroupItem>
-                    ))}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between flex-wrap gap-2">
+                        {letras.map((letter) => (
+                          <ToggleGroupItem
+                            key={letter}
+                            value={letter}
+                            aria-label="Toggle bold"
+                            onClick={() =>
+                              setExcludeLetters((prevState) => [
+                                ...prevState,
+                                letter,
+                              ])
+                            }
+                          >
+                            {letter}
+                          </ToggleGroupItem>
+                        ))}
+                      </div>
+
+                      <p>Letras atualmente excluidas: {excludeLetters}</p>
+                    </div>
 
                     <Separator />
 
@@ -371,7 +401,18 @@ function App() {
                       <SelectContent>
                         <SelectItem value="30">30 segundos</SelectItem>
                         <SelectItem value="60">60 segundos</SelectItem>
-                        <SelectItem value="90">90 segundos</SelectItem>
+                        <SelectItem value="90" className="flex gap-2">
+                          90 segundos <Badge variant="secondary">1:30</Badge>
+                        </SelectItem>
+                        <SelectItem value="120">
+                          120 segundos <Badge variant="secondary">2:00</Badge>
+                        </SelectItem>
+                        <SelectItem value="150">
+                          150 segundos <Badge variant="secondary">2:30</Badge>
+                        </SelectItem>
+                        <SelectItem value="180">
+                          180 segundos <Badge variant="secondary">3:00</Badge>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -392,15 +433,26 @@ function App() {
                         <SelectItem value="4">4</SelectItem>
                         <SelectItem value="5">5</SelectItem>
                         <SelectItem value="6">6</SelectItem>
+                        <SelectItem value="7">7</SelectItem>
                       </SelectContent>
                     </Select>
 
                     <Separator />
+
                     <Button
-                      className="w-full"
+                      className="w-full flex gap-3"
                       onClick={() => setModalSugest((prevState) => !prevState)}
                     >
+                      <Badge variant="secondary">Beta</Badge>
                       Sugestões de temas
+                    </Button>
+
+                    <Button
+                      className="w-full"
+                      variant={"outline"}
+                      onClick={() => setExcludeLetters([])}
+                    >
+                      Limpar letras excluidas
                     </Button>
                     <AlertDialog
                       open={modalSugest}
@@ -489,7 +541,7 @@ function App() {
                 <ToggleGroupItem
                   key={"letter"}
                   value="valor"
-                  className="w-1/4 h-[9vh] bg-gray-500 text-white text-2xl"
+                  className="w-full h-[40vh] bg-gray-500 text-white text-9xl"
                   aria-label="Toggle bold"
                 >
                   {randomLetter}
@@ -605,16 +657,20 @@ function App() {
                   </Button>
                 )}
                 {currentRodada > 0 && timeLeft !== 0 && (
-                  <>
-                    <Button onClick={reset}>Reiniciar jogo</Button>
+                  <div className="flex flex-col gap-2">
                     <Button
                       onClick={() => setTimeLeft(0)}
                       variant={"destructive"}
+                      className="w-[50vw] h-[20vh]"
                       disabled={timeLeft === 0}
                     >
-                      Stop!
+                      {/* Stop! */}
+                      <PanToolOutlinedIcon
+                        sx={{ width: "100%", fontSize: "90px" }}
+                      />
                     </Button>
-                  </>
+                    {/* <Button onClick={reset}>Reiniciar jogo</Button> */}
+                  </div>
                 )}
               </CardFooter>
             </Card>
