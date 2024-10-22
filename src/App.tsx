@@ -78,7 +78,6 @@ function App() {
   const [leaderBoardModal, setLeaderBoardModal] = useState<boolean>(false);
   const [leaderBoard, setLeaderBoard] = useState<PlayerProps[][]>([]);
   const audio = new Audio(sirene);
-  // const text = "Letra x";
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -350,10 +349,11 @@ function App() {
                             value={letter}
                             aria-label="Toggle bold"
                             onClick={() =>
-                              setExcludeLetters((prevState) => [
-                                ...prevState,
-                                letter,
-                              ])
+                              setExcludeLetters((prevState) =>
+                                !excludeLetters.includes(letter)
+                                  ? [...prevState, letter]
+                                  : prevState
+                              )
                             }
                           >
                             {letter}
