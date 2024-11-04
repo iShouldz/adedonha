@@ -50,6 +50,13 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import { Badge } from "./components/ui/badge";
 import PanToolOutlinedIcon from "@mui/icons-material/PanToolOutlined";
+import { RotateCcw } from "lucide-react";
+import { Switch } from "./components/ui/switch";
+import {
+  shareOnWhatsApp,
+  shareOnTwitter,
+  openGithub,
+} from "./utils/redirect.utils";
 
 interface PlayerProps {
   id?: number;
@@ -78,6 +85,9 @@ function App() {
   const [leaderBoardModal, setLeaderBoardModal] = useState<boolean>(false);
   const [leaderBoard, setLeaderBoard] = useState<PlayerProps[][]>([]);
   const audio = new Audio(sirene);
+  const [timer, setTimer] = useState(false);
+  const [valueTimer, setValueTimer] = useState(3);
+  const [showInitialTimer, setShowInitialTimer] = useState(true);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -91,14 +101,13 @@ function App() {
 
   useEffect(() => {
     const synth = window.speechSynthesis;
-    const u = new SpeechSynthesisUtterance(`Letra sorteada: ` + randomLetter);
+    const u = new SpeechSynthesisUtterance(`Letra: ` + randomLetter);
     const voices = synth.getVoices();
-
     if (randomLetter !== undefined || randomLetter !== "") {
       u.volume = 1;
       u.voice =
         voices.find(
-          (v) => v.name === "Microsoft Maria - Portuguese (Brazil)"
+          (v) => v.name === "Microsoft Daniel - Portuguese (Brazil)"
         ) || null;
       if (volumeState) {
         synth.speak(u);
@@ -109,35 +118,6 @@ function App() {
       synth.cancel();
     };
   }, [randomLetter]);
-
-  const shareOnWhatsApp = () => {
-    const text =
-      "Venha jogar adedonha da maneira classica so que bem melhor! :) https://adedonha.vercel.app";
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(
-      text
-    )}`;
-    window.open(url, "_blank");
-  };
-
-  const shareOnTwitter = () => {
-    const text =
-      "Venha jogar adedonha da maneira classica so que bem melhor! :) https://adedonha.vercel.app";
-    const url = "https://adedonha.vercel.app";
-    const hashtags = "adedonha,sharing";
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      text
-    )}&url=${encodeURIComponent(url)}&hashtags=${hashtags}}`;
-
-    window.open(twitterUrl, "_blank");
-  };
-
-  const openGithub = () => {
-    window.open("https://github.com/iShouldz", "_blank");
-  };
-
-  const handleSelectChange = (value: string) => {
-    setTimerValue(Number(value));
-  };
 
   const getRandomLetter = () => {
     let index = Math.floor(Math.random() * 25);
@@ -155,6 +135,29 @@ function App() {
     if (timeLeft === 0 || timeLeft === -1) {
       setTimeLeft(timerValue);
     }
+  };
+
+  useEffect(() => {
+    if (timer && rodadas !== currentRodada) {
+      const interval = setInterval(() => {
+        setValueTimer((prevState) => {
+          if (prevState <= 0) {
+            clearInterval(interval);
+            setTimer(false);
+            getRandomLetter();
+            return 0;
+          }
+          return prevState - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+    setValueTimer(3);
+  }, [timer]);
+
+  const handleSelectChange = (value: string) => {
+    setTimerValue(Number(value));
   };
 
   const reset = () => {
@@ -200,11 +203,16 @@ function App() {
 
   const handleClick = (index: number) => {
     let count = 0;
+    if (showInitialTimer) {
+      setTimer((prevState) => !prevState);
+    } else {
+      getRandomLetter();
+    }
+
     while (index != count) {
       handleScorePermaChange(count);
       count++;
     }
-    getRandomLetter();
   };
 
   const renderInputs = () => {
@@ -214,7 +222,9 @@ function App() {
           {index === 0 && (
             <div className="flex w-full gap-2 ">
               <Button onClick={() => handleClick(players.length)}>
-                Gerar próximo
+                {rodadas === currentRodada
+                  ? "Finalizar partida"
+                  : "Gerar próximo"}
               </Button>
               {currentRodada > 0 && (
                 <>
@@ -339,7 +349,7 @@ function App() {
                   <ToggleGroup
                     type="multiple"
                     variant="outline"
-                    className="flex flex-wrap w-full justify-between gap-2"
+                    className="flex flex-wrap w-full justify-between gap-3"
                   >
                     <div className="flex flex-col gap-2">
                       <div className="flex justify-between flex-wrap gap-2">
@@ -350,7 +360,11 @@ function App() {
                             aria-label="Toggle bold"
                             onClick={() =>
                               setExcludeLetters((prevState) =>
-                                !excludeLetters.includes(letter)
+                                excludeLetters.includes(letter)
+                                  ? prevState.filter(
+                                      (letra) => letra !== letter
+                                    )
+                                  : !excludeLetters.includes(letter)
                                   ? [...prevState, letter]
                                   : prevState
                               )
@@ -361,7 +375,15 @@ function App() {
                         ))}
                       </div>
 
-                      <p>Letras atualmente excluidas: {excludeLetters}</p>
+                      <p className="flex items-center justify-center gap-4">
+                        Letras atualmente excluidas: {excludeLetters}{" "}
+                        <Button
+                          variant={"outline"}
+                          onClick={() => setExcludeLetters([])}
+                        >
+                          <RotateCcw />
+                        </Button>
+                      </p>
                     </div>
 
                     <Separator />
@@ -438,22 +460,35 @@ function App() {
                     </Select>
 
                     <Separator />
+                    <div className="flex flex-col gap-3 w-full">
+                      <div className="flex justify-center items-center gap-2">
+                        <p>Exibir contagem regressiva</p>
+                        <Switch
+                          checked={showInitialTimer}
+                          onCheckedChange={() =>
+                            setShowInitialTimer((prevState) => !prevState)
+                          }
+                        />
+                      </div>
+                      <Button
+                        className="w-full flex gap-3"
+                        onClick={() =>
+                          setModalSugest((prevState) => !prevState)
+                        }
+                      >
+                        <Badge variant="secondary">Beta</Badge>
+                        Sugestões de temas
+                      </Button>
+                    </div>
 
-                    <Button
-                      className="w-full flex gap-3"
-                      onClick={() => setModalSugest((prevState) => !prevState)}
-                    >
-                      <Badge variant="secondary">Beta</Badge>
-                      Sugestões de temas
-                    </Button>
-
-                    <Button
+                    {/* <Button
                       className="w-full"
                       variant={"outline"}
                       onClick={() => setExcludeLetters([])}
                     >
                       Limpar letras excluidas
-                    </Button>
+                    </Button> */}
+
                     <AlertDialog
                       open={modalSugest}
                       onOpenChange={setModalSugest}
@@ -594,6 +629,19 @@ function App() {
               </AlertDialogContent>
             </AlertDialog>
 
+            <AlertDialog open={timer} onOpenChange={setTimer}>
+              <AlertDialogContent className="w-3/4 h-1/3 rounded-lg shadow-none md:rounded-xl bg-transparent border-none">
+                <AlertDialogHeader className="flex flex-col gap-6 justify-center">
+                  <AlertDialogTitle className="text-3xl text-white">
+                    Próxima letra em:
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-5xl font-extrabold animate-ping shadow-slate-700 text-white">
+                    {valueTimer}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <Card className="w-full">
               <CardHeader>
                 <CardTitle className="flex items-center w-full justify-between">
@@ -650,7 +698,7 @@ function App() {
               <CardFooter className="flex gap-2 w-full justify-center">
                 {currentRodada === 0 && (
                   <Button
-                    onClick={getRandomLetter}
+                    onClick={() => setTimer((prevState) => !prevState)}
                     disabled={historyLetter.length === 25 || timeLeft > 0}
                   >
                     Gerar letra
