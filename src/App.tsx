@@ -50,13 +50,15 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import { Badge } from "./components/ui/badge";
 import PanToolOutlinedIcon from "@mui/icons-material/PanToolOutlined";
-import { RotateCcw } from "lucide-react";
+import { LetterText, RotateCcw } from "lucide-react";
 import { Switch } from "./components/ui/switch";
 import {
   shareOnWhatsApp,
   shareOnTwitter,
   openGithub,
 } from "./utils/redirect.utils";
+import { useExcludeLetters } from "./store/useLetters";
+import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
 
 interface PlayerProps {
   id?: number;
@@ -68,7 +70,7 @@ interface PlayerProps {
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
   const [historyLetter, setHistoryLetter] = useState<string[]>([]);
-  const [excludeLetters, setExcludeLetters] = useState<string[]>([]);
+
   const [timerValue, setTimerValue] = useState<number>(30);
   const [timeLeft, setTimeLeft] = useState(-1);
   const [start, setStart] = useState(false);
@@ -78,16 +80,28 @@ function App() {
   const [volumeState, setVolumeState] = useState(false);
   const [players, setPlayers] = useState<PlayerProps[]>([
     { id: 0, name: "", points: 0, currentPoints: 0 },
+    { id: 1, name: "", points: 0, currentPoints: 0 },
   ]);
   const [modalSugest, setModalSugest] = useState(false);
   const [themeSugest, setThemeSugest] = useState<string[]>([]);
   const [themeExclude] = useState<string[]>([]);
   const [leaderBoardModal, setLeaderBoardModal] = useState<boolean>(false);
-  const [leaderBoard, setLeaderBoard] = useState<PlayerProps[][]>([]);
+  const [leaderBoard, setLeaderBoard] = useState<PlayerProps[][]>(() => {
+    const storedLeaderBoard = localStorage.getItem("leaderboard");
+    return storedLeaderBoard ? JSON.parse(storedLeaderBoard) : [];
+  });
+
   const audio = new Audio(sirene);
   const [timer, setTimer] = useState(false);
   const [valueTimer, setValueTimer] = useState(3);
   const [showInitialTimer, setShowInitialTimer] = useState(true);
+
+  const {
+    excludesLetters,
+    addingExcludeLetter,
+    removeExcludeLetter,
+    resetExcludeLetter,
+  } = useExcludeLetters();
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -124,7 +138,7 @@ function App() {
 
     while (
       historyLetter.includes(letras[index]) ||
-      excludeLetters.includes(letras[index])
+      excludesLetters.includes(letras[index])
     ) {
       index = Math.floor(Math.random() * 25);
     }
@@ -141,7 +155,7 @@ function App() {
     if (timer && rodadas !== currentRodada) {
       const interval = setInterval(() => {
         setValueTimer((prevState) => {
-          if (prevState <= 0) {
+          if (prevState === 1) {
             clearInterval(interval);
             setTimer(false);
             getRandomLetter();
@@ -153,7 +167,12 @@ function App() {
 
       return () => clearInterval(interval);
     }
-    setValueTimer(3);
+    if (historyLetter.length === rodadas + 1) {
+      setTimer(false);
+      setAlert(false);
+    } else {
+      setValueTimer(3);
+    }
   }, [timer]);
 
   const handleSelectChange = (value: string) => {
@@ -163,12 +182,17 @@ function App() {
   const reset = () => {
     setRandomLetter("");
     setHistoryLetter([]);
-    setExcludeLetters([]);
+    resetExcludeLetter();
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
     setLeaderBoard((prevState) => [...prevState, players]);
-    setPlayers([{ name: "", points: 0, currentPoints: 0 }]);
+    // setPlayers([{ name: "", points: 0, currentPoints: 0 }]);
+    setPlayers((prevState) =>
+      prevState.map((item) => {
+        return { name: item.name, points: 0, currentPoints: 0 };
+      })
+    );
   };
 
   const handleNumPlayersChange = (valueS: string) => {
@@ -191,6 +215,7 @@ function App() {
   const handleScorePermaChange = (index: number) => {
     const newPlayers = [...players];
     newPlayers[index].points += newPlayers[index].currentPoints;
+    newPlayers[index].currentPoints = 0;
     setPlayers(newPlayers);
   };
 
@@ -203,10 +228,16 @@ function App() {
 
   const handleClick = (index: number) => {
     let count = 0;
-    if (showInitialTimer) {
+    if (showInitialTimer && historyLetter.length !== rodadas) {
       setTimer((prevState) => !prevState);
     } else {
       getRandomLetter();
+    }
+
+    console.log(leaderBoard);
+    if (rodadas === currentRodada + 1) {
+      console.log(leaderBoard)
+      localStorage.setItem("leaderboard", JSON.stringify(leaderBoard));
     }
 
     while (index != count) {
@@ -217,8 +248,8 @@ function App() {
 
   const renderInputs = () => {
     return players.map((player, index) => (
-      <>
-        <div key={index} className="player-input flex flex-col gap-2">
+      <div key={index}>
+        <div className="player-input flex flex-col gap-2">
           {index === 0 && (
             <div className="flex w-full gap-2 ">
               <Button onClick={() => handleClick(players.length)}>
@@ -258,7 +289,7 @@ function App() {
           </div>
           <Separator />
         </div>
-      </>
+      </div>
     ));
   };
 
@@ -315,8 +346,8 @@ function App() {
                 {rodadas} rodadas atigidas
                 <Separator />
                 <div className="flex flex-col items-start">
-                  {players.map((item) => (
-                    <p>
+                  {players.map((item, index) => (
+                    <p key={index}>
                       {item.name}: {item.points} pontos
                     </p>
                   ))}
@@ -332,42 +363,37 @@ function App() {
         </AlertDialog>
       ) : (
         <>
-          <Sheet>
-            <SheetTrigger className="flex justify-between w-full items-center">
-              <MenuIcon />
-              <SheetTitle className="flex items-center gap-2">
+          <div className="flex">
+            <Sheet>
+              <SheetTrigger className="flex justify-between w-full items-center">
+                <LetterText />
+                {/* <SheetTitle className="flex items-center gap-2">
                 Rodada:{currentRodada}/{rodadas}
-              </SheetTitle>
-            </SheetTrigger>
-            <SheetContent
-              side={"left"}
-              className="flex flex-col gap-11 h-full overflow-y-auto"
-            >
-              <SheetHeader>
-                <SheetTitle>Exclua as letras indesejadas</SheetTitle>
-                <SheetDescription>
-                  <ToggleGroup
-                    type="multiple"
-                    variant="outline"
-                    className="flex flex-wrap w-full justify-between gap-3"
-                  >
-                    <div className="flex flex-col gap-2">
+              </SheetTitle> */}
+              </SheetTrigger>
+              <SheetContent
+                side={"left"}
+                className="flex flex-col gap-11 h-full overflow-y-auto"
+              >
+                <SheetHeader>
+                  <SheetTitle>Exclua as letras indesejadas</SheetTitle>
+                  <SheetDescription>
+                    <ToggleGroup
+                      type="multiple"
+                      variant="outline"
+                      className="flex flex-wrap w-full justify-between gap-3"
+                    >
                       <div className="flex justify-between flex-wrap gap-2">
                         {letras.map((letter) => (
                           <ToggleGroupItem
                             key={letter}
                             value={letter}
+                            className="w-[60px] h-[60px] text-lg"
                             aria-label="Toggle bold"
                             onClick={() =>
-                              setExcludeLetters((prevState) =>
-                                excludeLetters.includes(letter)
-                                  ? prevState.filter(
-                                      (letra) => letra !== letter
-                                    )
-                                  : !excludeLetters.includes(letter)
-                                  ? [...prevState, letter]
-                                  : prevState
-                              )
+                              !excludesLetters.includes(letter)
+                                ? addingExcludeLetter(letter)
+                                : removeExcludeLetter(letter)
                             }
                           >
                             {letter}
@@ -375,92 +401,185 @@ function App() {
                         ))}
                       </div>
 
-                      <p className="flex items-center justify-center gap-4">
-                        Letras atualmente excluidas: {excludeLetters}{" "}
+                      <Separator />
+
+                      <div className="flex flex-col gap-3 w-full">
+                        <p className="flex items-center justify-center gap-4">
+                          Letras atualmente excluidas: <br />
+                          <Button
+                            variant={"outline"}
+                            onClick={() => resetExcludeLetter()}
+                          >
+                            <RotateCcw />
+                          </Button>
+                        </p>
+                        <p className="text-red-600 font-bold text-lg">
+                          {excludesLetters.map((letters, index) =>
+                            index !== excludesLetters.length - 1
+                              ? `${letters} - `
+                              : letters
+                          )}
+                        </p>
                         <Button
-                          variant={"outline"}
-                          onClick={() => setExcludeLetters([])}
+                          className="w-full flex gap-3"
+                          onClick={() =>
+                            setModalSugest((prevState) => !prevState)
+                          }
                         >
-                          <RotateCcw />
+                          <Badge variant="secondary">Beta</Badge>
+                          Sugestões de temas
                         </Button>
-                      </p>
-                    </div>
+                      </div>
 
-                    <Separator />
+                      <AlertDialog
+                        open={modalSugest}
+                        onOpenChange={setModalSugest}
+                      >
+                        <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="w-full">
+                              Sugestões de temas
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="flex flex-col gap-3">
+                              <div className="flex gap-1 w-fit flex-wrap justify-center">
+                                {themeSugest.map((tema) => (
+                                  <Badge variant="default">{tema}</Badge>
+                                ))}
+                              </div>
 
-                    <p>Selecione o número de rodadas</p>
-                    <Select
-                      disabled={timeLeft !== -1}
-                      onValueChange={(value: string) =>
-                        setRodadas(Number(value))
-                      }
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Rodadas" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="2">2 rodadas</SelectItem>
-                        <SelectItem value="3">3 rodadas</SelectItem>
-                        <SelectItem value="4">4 rodadas</SelectItem>
-                        <SelectItem value="5">5 rodadas</SelectItem>
-                        <SelectItem value="6">6 rodadas</SelectItem>
-                        <SelectItem value="7">7 rodadas</SelectItem>
-                        <SelectItem value="8">8 rodadas</SelectItem>
-                        <SelectItem value="9">9 rodadas</SelectItem>
-                      </SelectContent>
-                    </Select>
+                              <Separator />
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex flex-col gap-2">
+                            <Button
+                              onClick={() => getRandomThemes(7)}
+                              disabled={themeSugest.length >= 30}
+                            >
+                              Gerar
+                            </Button>
+                            <Button
+                              onClick={() => setThemeSugest([])}
+                              variant={"secondary"}
+                            >
+                              Limpar sugestões
+                            </Button>
 
-                    <Separator />
-                    <p>Selecione o timer da rodada</p>
+                            <Button
+                              variant="outline"
+                              onClick={() =>
+                                setModalSugest((prevState) => !prevState)
+                              }
+                            >
+                              Fechar
+                            </Button>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </ToggleGroup>
+                  </SheetDescription>
+                </SheetHeader>
+              </SheetContent>
+            </Sheet>
+            <h2 className="font-mono text-xl font-bold">
+              Rodada:{currentRodada}/{rodadas}
+            </h2>
+            <Sheet>
+              <SheetTrigger className="flex justify-end w-full items-center">
+                <MenuIcon />
+              </SheetTrigger>
+              <SheetContent
+                side={"right"}
+                className="flex flex-col gap-11 h-full overflow-y-auto"
+              >
+                <SheetHeader>
+                  <SheetTitle>Configurações da partida</SheetTitle>
+                  <SheetDescription>
+                    <div className="flex flex-col gap-4">
+                      <Separator />
 
-                    <Select
-                      disabled={timeLeft !== -1}
-                      onValueChange={handleSelectChange}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Timer" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="30">30 segundos</SelectItem>
-                        <SelectItem value="60">60 segundos</SelectItem>
-                        <SelectItem value="90" className="flex gap-2">
-                          90 segundos <Badge variant="secondary">1:30</Badge>
-                        </SelectItem>
-                        <SelectItem value="120">
-                          120 segundos <Badge variant="secondary">2:00</Badge>
-                        </SelectItem>
-                        <SelectItem value="150">
-                          150 segundos <Badge variant="secondary">2:30</Badge>
-                        </SelectItem>
-                        <SelectItem value="180">
-                          180 segundos <Badge variant="secondary">3:00</Badge>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <p>Selecione o número de rodadas</p>
+                      <Select
+                        disabled={timeLeft !== -1}
+                        onValueChange={(value: string) =>
+                          setRodadas(Number(value))
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Rodadas" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2">2 rodadas</SelectItem>
+                          <SelectItem value="3">3 rodadas</SelectItem>
+                          <SelectItem value="4">4 rodadas</SelectItem>
+                          <SelectItem value="5">5 rodadas</SelectItem>
+                          <SelectItem value="6">6 rodadas</SelectItem>
+                          <SelectItem value="7">7 rodadas</SelectItem>
+                          <SelectItem value="8">8 rodadas</SelectItem>
+                          <SelectItem value="9">9 rodadas</SelectItem>
+                        </SelectContent>
+                      </Select>
 
-                    <Separator />
-                    <p>Selecione o número de jogadores</p>
+                      <Separator />
+                      <p>Selecione o timer da rodada</p>
 
-                    <Select
-                      disabled={timeLeft !== -1}
-                      onValueChange={handleNumPlayersChange}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Jogadores" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
-                        <SelectItem value="4">4</SelectItem>
-                        <SelectItem value="5">5</SelectItem>
-                        <SelectItem value="6">6</SelectItem>
-                        <SelectItem value="7">7</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      <Select
+                        disabled={timeLeft !== -1}
+                        onValueChange={handleSelectChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Timer" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="30">30 segundos</SelectItem>
+                          <SelectItem value="60">60 segundos</SelectItem>
+                          <SelectItem value="90" className="flex gap-2">
+                            90 segundos <Badge variant="secondary">1:30</Badge>
+                          </SelectItem>
+                          <SelectItem value="120">
+                            120 segundos <Badge variant="secondary">2:00</Badge>
+                          </SelectItem>
+                          <SelectItem value="150">
+                            150 segundos <Badge variant="secondary">2:30</Badge>
+                          </SelectItem>
+                          <SelectItem value="180">
+                            180 segundos <Badge variant="secondary">3:00</Badge>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
 
-                    <Separator />
-                    <div className="flex flex-col gap-3 w-full">
+                      <Separator />
+                      <p>Selecione o número de jogadores</p>
+
+                      <Select
+                        disabled={timeLeft !== -1}
+                        onValueChange={handleNumPlayersChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Jogadores" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="3">3</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="5">5</SelectItem>
+                          <SelectItem value="6">6</SelectItem>
+                          <SelectItem value="7">7</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Separator />
+
+                      <Button
+                        className="flex gap-4"
+                        onClick={() =>
+                          setPlayers([
+                            { name: "", points: 0, currentPoints: 0 },
+                          ])
+                        }
+                      >
+                        <PersonOffOutlinedIcon /> Limpar nome dos jogadores
+                      </Button>
+
                       <div className="flex justify-center items-center gap-2">
                         <p>Exibir contagem regressiva</p>
                         <Switch
@@ -470,97 +589,82 @@ function App() {
                           }
                         />
                       </div>
-                      <Button
-                        className="w-full flex gap-3"
-                        onClick={() =>
-                          setModalSugest((prevState) => !prevState)
-                        }
+
+                      <AlertDialog
+                        open={modalSugest}
+                        onOpenChange={setModalSugest}
                       >
-                        <Badge variant="secondary">Beta</Badge>
-                        Sugestões de temas
+                        <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="w-full">
+                              Sugestões de temas
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="flex flex-col gap-3">
+                              <div>
+                                {themeSugest.map((tema) => (
+                                  <Badge variant="default">{tema}</Badge>
+                                ))}
+                              </div>
+
+                              <Separator />
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="flex flex-col gap-2">
+                            <Button onClick={() => getRandomThemes(7)}>
+                              Gerar
+                            </Button>
+                            <Button
+                              onClick={() => setThemeSugest([])}
+                              variant={"secondary"}
+                            >
+                              Limpar sugestões
+                            </Button>
+
+                            <Button
+                              variant="outline"
+                              onClick={() =>
+                                setModalSugest((prevState) => !prevState)
+                              }
+                            >
+                              Fechar
+                            </Button>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </SheetDescription>
+                </SheetHeader>
+                <SheetFooter>
+                  <div className="absolute bottom-4 flex w-[85%] flex-col gap-1 justify-center items-center">
+                    <GitHubIcon onClick={openGithub} />
+
+                    <CardDescription>
+                      Desenvolvido com ❤️ por Shouldz
+                    </CardDescription>
+                    <Separator />
+                    <p className="font-extrabold tracking-tight text-sm">
+                      Que tal compartilhar?
+                    </p>
+
+                    <div className="flex gap-6">
+                      <Button
+                        className="rounded-full w-16 h-16"
+                        onClick={shareOnWhatsApp}
+                      >
+                        <WhatsAppIcon />
+                      </Button>
+                      <Button
+                        className="rounded-full w-16 h-16"
+                        onClick={shareOnTwitter}
+                      >
+                        <XIcon />
                       </Button>
                     </div>
-
-                    {/* <Button
-                      className="w-full"
-                      variant={"outline"}
-                      onClick={() => setExcludeLetters([])}
-                    >
-                      Limpar letras excluidas
-                    </Button> */}
-
-                    <AlertDialog
-                      open={modalSugest}
-                      onOpenChange={setModalSugest}
-                    >
-                      <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle className="w-full">
-                            Sugestões de temas
-                          </AlertDialogTitle>
-                          <AlertDialogDescription className="flex flex-col gap-3">
-                            <div>
-                              {themeSugest.map((tema) => (
-                                <Badge variant="default">{tema}</Badge>
-                              ))}
-                            </div>
-
-                            <Separator />
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter className="flex flex-col gap-2">
-                          <Button onClick={() => getRandomThemes(7)}>
-                            Gerar
-                          </Button>
-                          <Button
-                            onClick={() => setThemeSugest([])}
-                            variant={"secondary"}
-                          >
-                            Limpar sugestões
-                          </Button>
-
-                          <Button
-                            variant="outline"
-                            onClick={() =>
-                              setModalSugest((prevState) => !prevState)
-                            }
-                          >
-                            Fechar
-                          </Button>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </ToggleGroup>
-                </SheetDescription>
-              </SheetHeader>
-              <SheetFooter className="top-5 flex w-full flex-col gap-1 justify-center items-center">
-                <GitHubIcon onClick={openGithub} />
-
-                <CardDescription>
-                  Desenvolvido com ❤️ por Shouldz
-                </CardDescription>
-                <Separator />
-                <p className="font-extrabold tracking-tight text-sm">
-                  Que tal compartilhar?
-                </p>
-
-                <div className="flex gap-6">
-                  <Button
-                    className="rounded-full w-16 h-16"
-                    onClick={shareOnWhatsApp}
-                  >
-                    <WhatsAppIcon />
-                  </Button>
-                  <Button
-                    className="rounded-full w-16 h-16"
-                    onClick={shareOnTwitter}
-                  >
-                    <XIcon />
-                  </Button>
-                </div>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
+                  </div>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
+          </div>
 
           <section className="w-full h-full flex flex-col justify-center items-center gap-4">
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
@@ -576,7 +680,7 @@ function App() {
                 <ToggleGroupItem
                   key={"letter"}
                   value="valor"
-                  className="w-full h-[40vh] bg-gray-500 text-white text-9xl"
+                  className="w-full h-[33vh] bg-gray-500 text-white text-9xl"
                   aria-label="Toggle bold"
                 >
                   {randomLetter}
@@ -675,7 +779,7 @@ function App() {
                   {timeLeft === 0 && <h2>Tempo Esgotado!</h2>}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex gap-2 flex-col">
                 <ToggleGroup
                   type="single"
                   variant="outline"
@@ -698,7 +802,11 @@ function App() {
               <CardFooter className="flex gap-2 w-full justify-center">
                 {currentRodada === 0 && (
                   <Button
-                    onClick={() => setTimer((prevState) => !prevState)}
+                    onClick={() =>
+                      showInitialTimer
+                        ? setTimer((prevState) => !prevState)
+                        : getRandomLetter()
+                    }
                     disabled={historyLetter.length === 25 || timeLeft > 0}
                   >
                     Gerar letra
