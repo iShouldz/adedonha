@@ -377,8 +377,16 @@ function App() {
         <AlertDialog open={true} onOpenChange={setAlert}>
           <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
             <AlertDialogHeader>
-              <AlertDialogTitle>Fim de jogo</AlertDialogTitle>
-              <AlertDialogDescription className="flex flex-col gap-3">
+              <AlertDialogTitle
+                className={`${theme === "dark" && "text-white"}`}
+              >
+                Fim de jogo
+              </AlertDialogTitle>
+              <AlertDialogDescription
+                className={`flex flex-col gap-3 ${
+                  theme === "dark" && "text-white"
+                }`}
+              >
                 {rodadas} rodadas atigidas
                 <Separator />
                 <div className="flex flex-col items-start">
@@ -763,7 +771,11 @@ function App() {
             <AlertDialog open={alert} onOpenChange={setAlert}>
               <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>STOPPPPP</AlertDialogTitle>
+                  <AlertDialogTitle
+                    className={`${theme === "dark" && "text-white"}`}
+                  >
+                    STOPPPPP
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
                     PAREM AS CANETAS!!! ACABOU O TEMPO
                   </AlertDialogDescription>
