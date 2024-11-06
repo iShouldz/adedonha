@@ -684,9 +684,9 @@ function App() {
           </div>
 
           <section className="w-full h-full flex flex-col justify-center items-center gap-4">
-            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+            {/* <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
               Adedonha
-            </h1>
+            </h1> */}
             <Separator />
             {currentRodada > 0 && (
               <ToggleGroup
