@@ -727,35 +727,30 @@ function App() {
                   <AlertDialogTitle>Leaderboard</AlertDialogTitle>
                   <AlertDialogDescription>
                     Placares dos jogos anteriores
-                    {paginationLeaderBoard[currentPaginatinationPage].map(
-                      (round, roundIndex) => (
-                        <div key={roundIndex} className="mb-4">
-                          <p className="text-lg font-bold">
-                            Jogo {roundIndex + 1}
-                          </p>
-                          
-                          {round.map((player: PlayerProps) => (
-                            <p
-                              key={player.id || `${player.name}-${roundIndex}`}
-                            >
-                              {player.name} - {player.points}
+                    {paginationLeaderBoard[currentPaginatinationPage] !==
+                    undefined ? (
+                      paginationLeaderBoard[currentPaginatinationPage].map(
+                        (round, roundIndex) => (
+                          <div key={roundIndex} className="mb-4">
+                            <p className="text-lg font-bold">
+                              Jogo {roundIndex + 1}
                             </p>
-                          ))}
-                        </div>
+
+                            {round.map((player: PlayerProps) => (
+                              <p
+                                key={
+                                  player.id || `${player.name}-${roundIndex}`
+                                }
+                              >
+                                {player.name} - {player.points}
+                              </p>
+                            ))}
+                          </div>
+                        )
                       )
+                    ) : (
+                      <p>Sem dados anteriores</p>
                     )}
-                    {/* {leaderBoard.map((round, roundIndex) => (
-                      <div key={roundIndex} className="mb-4">
-                        <p className="text-lg font-bold">
-                          Jogo {roundIndex + 1}
-                        </p>
-                        {round.map((player) => (
-                          <p key={Math.random()}>
-                            {player.name} - {player.points}
-                          </p>
-                        ))}
-                      </div>
-                    ))} */}
                     <Pagination>
                       <PaginationContent>
                         <PaginationItem>
@@ -918,7 +913,11 @@ function App() {
                     >
                       {/* Stop! */}
                       <PanToolOutlinedIcon
-                        sx={{ width: "100%", fontSize: "90px" }}
+                        sx={{
+                          width: "100px !important",
+                          height: "100px !important",
+                          fontSize: "90px",
+                        }}
                       />
                     </Button>
                     {/* <Button onClick={reset}>Reiniciar jogo</Button> */}
