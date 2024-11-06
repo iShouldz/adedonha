@@ -67,6 +67,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useTheme } from "@/components/theme-provider";
+import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
+import BedtimeOutlinedIcon from "@mui/icons-material/BedtimeOutlined";
 
 interface PlayerProps {
   id?: number;
@@ -78,7 +81,6 @@ interface PlayerProps {
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
   const [historyLetter, setHistoryLetter] = useState<string[]>([]);
-
   const [timerValue, setTimerValue] = useState<number>(30);
   const [timeLeft, setTimeLeft] = useState(-1);
   const [start, setStart] = useState(false);
@@ -105,6 +107,9 @@ function App() {
   const [timer, setTimer] = useState(false);
   const [valueTimer, setValueTimer] = useState(3);
   const [showInitialTimer, setShowInitialTimer] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { theme, setTheme } = useTheme();
+
   const audio = new Audio(sirene);
 
   const {
@@ -189,6 +194,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("leaderboard", JSON.stringify(leaderBoard));
   }, [historyLetter.length === rodadas + 1]);
+
+  useEffect(() => {
+    setTheme(!isDarkMode ? "light" : "dark");
+  }, [isDarkMode]);
 
   useEffect(() => {
     setPaginationLeaderBoard(splitIntoGroups(leaderBoard, 3));
@@ -337,13 +346,21 @@ function App() {
   return (
     <div>
       {!start ? (
-        <div className="bg-[#ced6dc] min-h-[90vh] box-border m-5 flex flex-col justify-center">
-          <div className="w-full h-full flex flex-col gap-2 justify-center items-center">
-            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        <div
+          className={` min-h-[90vh] box-border m-5 flex flex-col justify-center `}
+        >
+          <div
+            className={`w-full h-full flex flex-col gap-2 justify-center items-center  `}
+          >
+            <h1
+              className={`scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl ${
+                theme === "dark" && "text-white"
+              }`}
+            >
               Adedonha
             </h1>
             <Separator />
-            <p className="font-extrabold tracking-tight text-xl">
+            <p className={`font-extrabold tracking-tight text-xl`}>
               O classico, só que moderno.
             </p>
             <img src={stop} />
@@ -381,11 +398,13 @@ function App() {
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <div className="bg-[#ced6dc] min-h-[90vh] box-border m-5 flex flex-col justify-between ">
-          <div className="flex bg-[#ced6dc] ">
+        <div className="min-h-[90vh] box-border m-5 flex flex-col justify-between ">
+          <div className="flex ">
             <Sheet>
               <SheetTrigger className="flex justify-between w-full items-center">
-                <LetterText />
+                <LetterText
+                  style={{ color: theme === "dark" ? "white" : "black" }}
+                />
                 {/* <SheetTitle className="flex items-center gap-2">
                 Rodada:{currentRodada}/{rodadas}
               </SheetTitle> */}
@@ -499,12 +518,18 @@ function App() {
                 </SheetHeader>
               </SheetContent>
             </Sheet>
-            <h2 className="font-mono text-xl font-bold">
+            <h2
+              className={`font-mono text-xl font-bold ${
+                theme === "dark" && "text-white"
+              }`}
+            >
               Rodada:{currentRodada}/{rodadas}
             </h2>
             <Sheet>
               <SheetTrigger className="flex justify-end w-full items-center">
-                <MenuIcon />
+                <MenuIcon
+                  sx={{ color: theme === "dark" ? "white" : "black" }}
+                />
               </SheetTrigger>
               <SheetContent
                 side={"right"}
@@ -599,14 +624,30 @@ function App() {
                         <PersonOffOutlinedIcon /> Limpar nome dos jogadores
                       </Button>
 
-                      <div className="flex justify-center items-center gap-2">
-                        <p>Exibir contagem regressiva</p>
-                        <Switch
-                          checked={showInitialTimer}
-                          onCheckedChange={() =>
-                            setShowInitialTimer((prevState) => !prevState)
-                          }
-                        />
+                      <Button
+                        className="flex gap-4"
+                        onClick={() => setIsDarkMode((prevState) => !prevState)}
+                      >
+                        {theme === "light" ? (
+                          <>
+                            <BedtimeOutlinedIcon /> Modo escuro
+                          </>
+                        ) : (
+                          <>
+                            <WbSunnyOutlinedIcon /> Modo claro
+                          </>
+                        )}
+                      </Button>
+                      <div className="flex justify-center flex-col items-center gap-2">
+                        <div className="flex gap-2 items-center">
+                          <p>Exibir contagem regressiva</p>
+                          <Switch
+                            checked={showInitialTimer}
+                            onCheckedChange={() =>
+                              setShowInitialTimer((prevState) => !prevState)
+                            }
+                          />
+                        </div>
                       </div>
 
                       <AlertDialog
@@ -655,13 +696,22 @@ function App() {
                 </SheetHeader>
                 <SheetFooter>
                   <div className="absolute bottom-4 flex w-[85%] flex-col gap-1 justify-center items-center">
-                    <GitHubIcon onClick={openGithub} />
+                    <GitHubIcon
+                      onClick={openGithub}
+                      sx={{ color: theme === "dark" ? "white" : "black" }}
+                    />
 
-                    <CardDescription>
+                    <CardDescription
+                      className={`${theme === "dark" && "text-white"}`}
+                    >
                       Desenvolvido com ❤️ por Shouldz
                     </CardDescription>
                     <Separator />
-                    <p className="font-extrabold tracking-tight text-sm">
+                    <p
+                      className={`font-extrabold tracking-tight text-sm ${
+                        theme === "dark" && "text-white"
+                      }`}
+                    >
                       Que tal compartilhar?
                     </p>
 
@@ -685,8 +735,12 @@ function App() {
             </Sheet>
           </div>
 
-          <section className="w-full h-full bg-[#ced6dc] flex flex-col justify-center items-center gap-4">
-            <h1 className=" text-4xl font-extrabold tracking-tight lg:text-5xl">
+          <section className="w-full h-full flex flex-col justify-center items-center gap-4">
+            <h1
+              className={` text-4xl font-extrabold tracking-tight lg:text-5xl ${
+                theme === "dark" && "text-white"
+              }`}
+            >
               Adedonha
             </h1>
             <Separator />
