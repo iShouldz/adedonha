@@ -724,7 +724,7 @@ function App() {
               open={leaderBoardModal}
               onOpenChange={setLeaderBoardModal}
             >
-              <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
+              <AlertDialogContent className="w-[80%] rounded-lg md:rounded-xl">
                 <AlertDialogHeader>
                   <AlertDialogTitle>Leaderboard</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -760,7 +760,8 @@ function App() {
                             href="#"
                             className={
                               currentPaginatinationPage <
-                              Math.ceil(leaderBoard.length / 3) - 1
+                                Math.ceil(leaderBoard.length / 3) - 1 ||
+                              currentPaginatinationPage === 0
                                 ? "pointer-events-none opacity-50"
                                 : undefined
                             }
