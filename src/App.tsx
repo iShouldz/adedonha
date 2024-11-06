@@ -62,7 +62,6 @@ import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
