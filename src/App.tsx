@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "./components/ui/button";
-import { letras, temas } from "./utils/const.utils";
+import { letras, splitIntoGroups, temas } from "./utils/const.utils";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import MenuIcon from "@mui/icons-material/Menu";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -59,6 +59,15 @@ import {
 } from "./utils/redirect.utils";
 import { useExcludeLetters } from "./store/useLetters";
 import PersonOffOutlinedIcon from "@mui/icons-material/PersonOffOutlined";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface PlayerProps {
   id?: number;
@@ -90,11 +99,14 @@ function App() {
     const storedLeaderBoard = localStorage.getItem("leaderboard");
     return storedLeaderBoard ? JSON.parse(storedLeaderBoard) : [];
   });
-
-  const audio = new Audio(sirene);
+  const [paginationLeaderBoard, setPaginationLeaderBoard] = useState<
+    PlayerProps[][][]
+  >([]);
+  const [currentPaginatinationPage, setCurrentPaginationPage] = useState(0);
   const [timer, setTimer] = useState(false);
   const [valueTimer, setValueTimer] = useState(3);
   const [showInitialTimer, setShowInitialTimer] = useState(true);
+  const audio = new Audio(sirene);
 
   const {
     excludesLetters,
@@ -175,6 +187,14 @@ function App() {
     }
   }, [timer]);
 
+  useEffect(() => {
+    localStorage.setItem("leaderboard", JSON.stringify(leaderBoard));
+  }, [historyLetter.length === rodadas + 1]);
+
+  useEffect(() => {
+    setPaginationLeaderBoard(splitIntoGroups(leaderBoard, 3));
+  }, [start]);
+
   const handleSelectChange = (value: string) => {
     setTimerValue(Number(value));
   };
@@ -186,8 +206,6 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
-    setLeaderBoard((prevState) => [...prevState, players]);
-    // setPlayers([{ name: "", points: 0, currentPoints: 0 }]);
     setPlayers((prevState) =>
       prevState.map((item) => {
         return { name: item.name, points: 0, currentPoints: 0 };
@@ -236,8 +254,8 @@ function App() {
 
     console.log(leaderBoard);
     if (rodadas === currentRodada + 1) {
-      console.log(leaderBoard)
-      localStorage.setItem("leaderboard", JSON.stringify(leaderBoard));
+      setLeaderBoard((prevState) => [...prevState, players]);
+      console.log("atualizado", leaderBoard);
     }
 
     while (index != count) {
@@ -388,7 +406,7 @@ function App() {
                           <ToggleGroupItem
                             key={letter}
                             value={letter}
-                            className="w-[60px] h-[60px] text-lg"
+                            className="w-[50px] h-[50px] text-lg"
                             aria-label="Toggle bold"
                             onClick={() =>
                               !excludesLetters.includes(letter)
@@ -710,7 +728,24 @@ function App() {
                   <AlertDialogTitle>Leaderboard</AlertDialogTitle>
                   <AlertDialogDescription>
                     Placares dos jogos anteriores
-                    {leaderBoard.map((round, roundIndex) => (
+                    {paginationLeaderBoard[currentPaginatinationPage].map(
+                      (round, roundIndex) => (
+                        <div key={roundIndex} className="mb-4">
+                          <p className="text-lg font-bold">
+                            Jogo {roundIndex + 1}
+                          </p>
+                          
+                          {round.map((player: PlayerProps) => (
+                            <p
+                              key={player.id || `${player.name}-${roundIndex}`}
+                            >
+                              {player.name} - {player.points}
+                            </p>
+                          ))}
+                        </div>
+                      )
+                    )}
+                    {/* {leaderBoard.map((round, roundIndex) => (
                       <div key={roundIndex} className="mb-4">
                         <p className="text-lg font-bold">
                           Jogo {roundIndex + 1}
@@ -721,7 +756,69 @@ function App() {
                           </p>
                         ))}
                       </div>
-                    ))}
+                    ))} */}
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            href="#"
+                            className={
+                              currentPaginatinationPage <
+                              Math.ceil(leaderBoard.length / 3) - 1
+                                ? "pointer-events-none opacity-50"
+                                : undefined
+                            }
+                            onClick={() =>
+                              setCurrentPaginationPage(
+                                (prevState) => prevState - 1
+                              )
+                            }
+                          />
+                        </PaginationItem>
+
+                        <PaginationItem>
+                          <PaginationLink href="#" isActive>
+                            {currentPaginatinationPage}
+                          </PaginationLink>
+                        </PaginationItem>
+
+                        <PaginationItem>
+                          <PaginationLink
+                            href="#"
+                            className={
+                              currentPaginatinationPage >
+                              Math.ceil(leaderBoard.length / 3) - 2
+                                ? "pointer-events-none opacity-50"
+                                : undefined
+                            }
+                            onClick={() =>
+                              setCurrentPaginationPage(
+                                (prevState) => prevState + 1
+                              )
+                            }
+                          >
+                            {currentPaginatinationPage + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+
+                        <PaginationItem>
+                          <PaginationNext
+                            href="#"
+                            className={
+                              currentPaginatinationPage >
+                              Math.ceil(leaderBoard.length / 3) - 2
+                                ? "pointer-events-none opacity-50"
+                                : undefined
+                            }
+                            onClick={() =>
+                              setCurrentPaginationPage(
+                                (prevState) => prevState + 1
+                              )
+                            }
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
 
