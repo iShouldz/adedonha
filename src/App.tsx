@@ -107,7 +107,7 @@ function App() {
   const [timer, setTimer] = useState(false);
   const [valueTimer, setValueTimer] = useState(3);
   const [showInitialTimer, setShowInitialTimer] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { theme, setTheme } = useTheme();
 
   const audio = new Audio(sirene);
@@ -780,7 +780,11 @@ function App() {
             >
               <AlertDialogContent className="w-[80%] rounded-lg md:rounded-xl">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Leaderboard</AlertDialogTitle>
+                  <AlertDialogTitle
+                    className={`${theme === "dark" && "text-white"}`}
+                  >
+                    Leaderboard
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
                     Placares dos jogos anteriores
                     {paginationLeaderBoard[currentPaginatinationPage] !==
