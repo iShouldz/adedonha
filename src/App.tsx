@@ -335,7 +335,7 @@ function App() {
   }
 
   return (
-    <div className="max-sm:bg-[#ced6dc] h-[100vh] max-sm:p-5">
+    <div className="bg-[#ced6dc] h-[100vh] box-border m-5">
       {!start ? (
         <div className="w-full h-full flex flex-col gap-2 justify-center items-center">
           <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
@@ -380,7 +380,7 @@ function App() {
         </AlertDialog>
       ) : (
         <>
-          <div className="flex">
+          <div className="flex bg-[#ced6dc] overflow-y-hidden">
             <Sheet>
               <SheetTrigger className="flex justify-between w-full items-center">
                 <LetterText />
@@ -683,10 +683,10 @@ function App() {
             </Sheet>
           </div>
 
-          <section className="w-full h-full flex flex-col justify-center items-center gap-4">
-            {/* <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+          <section className="w-full h-full bg-[#ced6dc] flex flex-col justify-center items-center gap-4">
+            <h1 className=" text-4xl font-extrabold tracking-tight lg:text-5xl">
               Adedonha
-            </h1> */}
+            </h1>
             <Separator />
             {currentRodada > 0 && (
               <ToggleGroup
@@ -837,7 +837,7 @@ function App() {
               </AlertDialogContent>
             </AlertDialog>
 
-            <Card className="w-full">
+            <Card className="w-full overflow-y-auto">
               <CardHeader>
                 <CardTitle className="flex items-center w-full justify-between">
                   Letras que já sairam:
