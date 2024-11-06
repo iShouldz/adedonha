@@ -303,7 +303,7 @@ function App() {
             value={player.name}
             placeholder="Digite seu nome"
             onChange={(e) => handleNameChange(index, e.target.value)}
-            className="outline-none input-no-outline"
+            className="outline-none input-no-outline bg-transparent"
           />
           <div className="flex gap-1">
             <Input
