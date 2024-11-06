@@ -335,24 +335,26 @@ function App() {
   }
 
   return (
-    <div className="bg-[#ced6dc] h-[100vh] box-border m-5">
+    <div>
       {!start ? (
-        <div className="w-full h-full flex flex-col gap-2 justify-center items-center">
-          <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-            Adedonha
-          </h1>
-          <Separator />
-          <p className="font-extrabold tracking-tight text-xl">
-            O classico, só que moderno.
-          </p>
-          <img src={stop} />
+        <div className="bg-[#ced6dc] min-h-[90vh] box-border m-5 flex flex-col justify-center">
+          <div className="w-full h-full flex flex-col gap-2 justify-center items-center">
+            <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+              Adedonha
+            </h1>
+            <Separator />
+            <p className="font-extrabold tracking-tight text-xl">
+              O classico, só que moderno.
+            </p>
+            <img src={stop} />
 
-          <Button
-            onClick={() => setStart((prevState) => !prevState)}
-            className="w-full h-12 text-xl"
-          >
-            Começar
-          </Button>
+            <Button
+              onClick={() => setStart((prevState) => !prevState)}
+              className="w-full h-12 text-xl"
+            >
+              Começar
+            </Button>
+          </div>
         </div>
       ) : historyLetter.length === rodadas + 1 ? (
         <AlertDialog open={true} onOpenChange={setAlert}>
@@ -379,8 +381,8 @@ function App() {
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <>
-          <div className="flex bg-[#ced6dc] overflow-y-hidden">
+        <div className="bg-[#ced6dc] min-h-[90vh] box-border m-5 flex flex-col justify-between ">
+          <div className="flex bg-[#ced6dc] ">
             <Sheet>
               <SheetTrigger className="flex justify-between w-full items-center">
                 <LetterText />
@@ -926,7 +928,9 @@ function App() {
               </CardFooter>
             </Card>
           </section>
-        </>
+
+          <div></div>
+        </div>
       )}
     </div>
   );
