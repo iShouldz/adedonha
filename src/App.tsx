@@ -106,7 +106,7 @@ function App() {
   const [currentPaginatinationPage, setCurrentPaginationPage] = useState(0);
   const [timer, setTimer] = useState(false);
   const [valueTimer, setValueTimer] = useState(3);
-  const [showInitialTimer, setShowInitialTimer] = useState(true);
+  const [showInitialTimer, setShowInitialTimer] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { theme, setTheme } = useTheme();
 
