@@ -70,13 +70,9 @@ import {
 import { useTheme } from "@/components/theme-provider";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import BedtimeOutlinedIcon from "@mui/icons-material/BedtimeOutlined";
+import LeaderboardImage from "./components/LeaderboardImage/LeaderboardImage";
+import { PlayerProps } from "./interfaces/player";
 
-interface PlayerProps {
-  id?: number;
-  name: string;
-  points: number;
-  currentPoints: number;
-}
 
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
@@ -240,7 +236,7 @@ function App() {
 
   const handleScorePermaChange = (index: number) => {
     const newPlayers = [...players];
-    newPlayers[index].points += newPlayers[index].currentPoints;
+    newPlayers[index].points += newPlayers[index].currentPoints; 
     newPlayers[index].currentPoints = 0;
     setPlayers(newPlayers);
   };
@@ -375,27 +371,21 @@ function App() {
         </div>
       ) : historyLetter.length === rodadas + 1 ? (
         <AlertDialog open={true} onOpenChange={setAlert}>
-          <AlertDialogContent className="w-3/4 rounded-lg md:rounded-xl">
+          <AlertDialogContent className="w-[95%] rounded-lg md:rounded-xl">
             <AlertDialogHeader>
               <AlertDialogTitle
                 className={`${theme === "dark" && "text-white"}`}
               >
                 Fim de jogo
               </AlertDialogTitle>
+              <Separator />
               <AlertDialogDescription
                 className={`flex flex-col gap-3 ${
                   theme === "dark" && "text-white"
                 }`}
               >
                 {rodadas} rodadas atigidas
-                <Separator />
-                <div className="flex flex-col items-start">
-                  {players.map((item, index) => (
-                    <p key={index}>
-                      {item.name}: {item.points} pontos
-                    </p>
-                  ))}
-                </div>
+                <LeaderboardImage data={leaderBoard[leaderBoard.length - 1]} />
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
