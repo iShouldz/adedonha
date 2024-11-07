@@ -73,7 +73,6 @@ import BedtimeOutlinedIcon from "@mui/icons-material/BedtimeOutlined";
 import LeaderboardImage from "./components/LeaderboardImage/LeaderboardImage";
 import { PlayerProps } from "./interfaces/player";
 
-
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
   const [historyLetter, setHistoryLetter] = useState<string[]>([]);
@@ -236,7 +235,7 @@ function App() {
 
   const handleScorePermaChange = (index: number) => {
     const newPlayers = [...players];
-    newPlayers[index].points += newPlayers[index].currentPoints; 
+    newPlayers[index].points += newPlayers[index].currentPoints;
     newPlayers[index].currentPoints = 0;
     setPlayers(newPlayers);
   };
@@ -839,24 +838,26 @@ function App() {
                           </PaginationLink>
                         </PaginationItem>
 
-                        <PaginationItem>
-                          <PaginationLink
-                            href="#"
-                            className={
-                              currentPaginatinationPage >
-                              Math.ceil(leaderBoard.length / 3) - 2
-                                ? "pointer-events-none opacity-50"
-                                : undefined
-                            }
-                            onClick={() =>
-                              setCurrentPaginationPage(
-                                (prevState) => prevState + 1
-                              )
-                            }
-                          >
-                            {currentPaginatinationPage + 1}
-                          </PaginationLink>
-                        </PaginationItem>
+                        {leaderBoard.length / 3 > 1 && (
+                          <PaginationItem>
+                            <PaginationLink
+                              href="#"
+                              className={
+                                currentPaginatinationPage >
+                                Math.ceil(leaderBoard.length / 3) - 2
+                                  ? "pointer-events-none opacity-50"
+                                  : undefined
+                              }
+                              onClick={() =>
+                                setCurrentPaginationPage(
+                                  (prevState) => prevState + 1
+                                )
+                              }
+                            >
+                              {currentPaginatinationPage + 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )}
 
                         <PaginationItem>
                           <PaginationNext
