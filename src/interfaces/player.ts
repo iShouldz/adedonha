@@ -7,4 +7,5 @@ export interface PlayerProps {
 
 export interface PlayerLeaderboard {
   data: PlayerProps[];
+  onReset: () => void;
 }

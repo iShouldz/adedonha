@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Progress } from "./components/ui/progress";
 import { Separator } from "./components/ui/separator";
-import stop from "./assets/stop.png";
+
 import {
   Card,
   CardContent,
@@ -72,6 +72,8 @@ import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import BedtimeOutlinedIcon from "@mui/icons-material/BedtimeOutlined";
 import LeaderboardImage from "./components/LeaderboardImage/LeaderboardImage";
 import { PlayerProps } from "./interfaces/player";
+import StartArea from "./components/StartArea/StartArea";
+import logo from "./assets/logo.png";
 
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
@@ -341,33 +343,7 @@ function App() {
   return (
     <div>
       {!start ? (
-        <div
-          className={` min-h-[90vh] box-border m-5 flex flex-col justify-center `}
-        >
-          <div
-            className={`w-full h-full flex flex-col gap-2 justify-center items-center  `}
-          >
-            <h1
-              className={`scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl ${
-                theme === "dark" && "text-white"
-              }`}
-            >
-              Adedonha
-            </h1>
-            <Separator />
-            <p className={`font-extrabold tracking-tight text-xl`}>
-              O classico, só que moderno.
-            </p>
-            <img src={stop} />
-
-            <Button
-              onClick={() => setStart((prevState) => !prevState)}
-              className="w-full h-12 text-xl"
-            >
-              Começar
-            </Button>
-          </div>
-        </div>
+        <StartArea setStart={setStart} />
       ) : historyLetter.length === rodadas + 1 ? (
         <AlertDialog open={true} onOpenChange={setAlert}>
           <AlertDialogContent className="w-[95%] rounded-lg md:rounded-xl">
@@ -384,14 +360,12 @@ function App() {
                 }`}
               >
                 {rodadas} rodadas atigidas
-                <LeaderboardImage data={leaderBoard[leaderBoard.length - 1]} />
+                <LeaderboardImage
+                  data={leaderBoard[leaderBoard.length - 1]}
+                  onReset={reset}
+                />
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              <Button onClick={reset} variant="destructive">
-                Reiniciar
-              </Button>
-            </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       ) : (
@@ -522,6 +496,7 @@ function App() {
             >
               Rodada:{currentRodada}/{rodadas}
             </h2>
+
             <Sheet>
               <SheetTrigger className="flex justify-end w-full items-center">
                 <MenuIcon
@@ -733,13 +708,7 @@ function App() {
           </div>
 
           <section className="w-full h-full flex flex-col justify-center items-center gap-4">
-            <h1
-              className={` text-4xl font-extrabold tracking-tight lg:text-5xl ${
-                theme === "dark" && "text-white"
-              }`}
-            >
-              Adedonha
-            </h1>
+            <img src={logo} alt="Logo Adedonha" className="h-24 w-24" />
             <Separator />
             {currentRodada > 0 && (
               <ToggleGroup

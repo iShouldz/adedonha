@@ -6,8 +6,9 @@ import { Button } from "../ui/button";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlayerLeaderboard } from "@/interfaces/player";
+import ReplayOutlinedIcon from "@mui/icons-material/ReplayOutlined";
 
-const LeaderboardImage = ({ data }: PlayerLeaderboard) => {
+const LeaderboardImage = ({ data, onReset }: PlayerLeaderboard) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const handleClick = useCallback(async () => {
@@ -114,14 +115,18 @@ const LeaderboardImage = ({ data }: PlayerLeaderboard) => {
           </a>
         </footer>
       </div>
-      <div className="flex items-center justify-center">
-        <Button
-          onClick={() => handleClick()}
-          className="rounded-full w-16 h-16"
-        >
+      <div className="flex items-center justify-center gap-2">
+        <Button onClick={() => handleClick()}>
           <FileDownloadOutlinedIcon
             sx={{ width: "24px !important", height: "24px !important" }}
-          />
+          />{" "}
+          Baixar
+        </Button>
+        <Button onClick={onReset} variant={"destructive"}>
+          <ReplayOutlinedIcon
+            sx={{ width: "24px !important", height: "24px !important" }}
+          />{" "}
+          Reiniciar
         </Button>
       </div>
     </div>
