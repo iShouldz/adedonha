@@ -71,7 +71,7 @@ const LeaderboardImage = ({ data }: PlayerLeaderboard) => {
                 <AvatarFallback>{data[1].name[0]}</AvatarFallback>
               </Avatar>
               <p className="font-semibold">{data[1].name}</p>
-              <p className="text-green-500 font-bold">{data[1].points}</p>
+              <p className="text-green-300 font-bold">{data[1].points}</p>
             </div>
           </div>
 
