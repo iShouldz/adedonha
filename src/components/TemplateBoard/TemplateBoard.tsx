@@ -1,5 +1,6 @@
 import { TemplateThemes } from "@/interfaces/player";
 import logo from "../../assets/logo.png";
+import dayjs from "dayjs";
 
 const TemplateBoard = ({ temas, callbackPDF }: TemplateThemes) => {
   return (
@@ -7,12 +8,13 @@ const TemplateBoard = ({ temas, callbackPDF }: TemplateThemes) => {
       <button onClick={callbackPDF}>Generate PDF</button>
       <div
         id="content-id"
-        className="w-screen h-screen overflow-auto p-2 bg-white shadow-lg flex-1"
+        className="w-screen h-screen overflow-auto p-2 bg-transparent shadow-lg flex-1"
         style={{
           backgroundImage: `url(${logo})`,
           backgroundPosition: "bottom right",
           backgroundRepeat: "no-repeat",
           backgroundSize: "150px",
+          backgroundPositionX: "1150px",
           opacity: 0.5,
         }}
       >
@@ -35,9 +37,9 @@ const TemplateBoard = ({ temas, callbackPDF }: TemplateThemes) => {
           <tbody className="w-full">
             {(() => {
               let rows = [];
-              for (let i = 0; i < 14; i++) {
+              for (let i = 0; i < 17; i++) {
                 rows.push(
-                  <tr key={i} className="border-b hover:bg-gray-50">
+                  <tr key={i} className="border-b">
                     <td className="py-6 px-6"></td>
                   </tr>
                 );
@@ -47,12 +49,14 @@ const TemplateBoard = ({ temas, callbackPDF }: TemplateThemes) => {
           </tbody>
         </table>
 
-        <div className="absolute z-10 bottom-1 w-full flex justify-center">
+        <div className="absolute z-10 bottom-0 w-full flex justify-center">
           <div className="flex flex-col justify-end items-center">
             <footer className="w-full pb-4">
               <div className="flex flex-col justify-end space-y-2">
                 <div className="flex items-center space-x-3">
-                  <span className="text-lg font-semibold">Adedonha</span>
+                  <span className="text-lg font-semibold">
+                    Jogo: {dayjs(dayjs()).format("DD/MM/YYYY - HH:mm")}
+                  </span>
                 </div>
 
                 <p className="text-sm text-gray-500 mt-2 text-center">

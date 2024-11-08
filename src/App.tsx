@@ -315,6 +315,7 @@ function App() {
 
   const handleGeneratePDF = () => {
     generatePDF(getTargetElement, options);
+    window.alert("Iniciando o download. Aguarde alguns segudos!");
   };
 
   const handleScoreChange = (index: number, value: number) => {
