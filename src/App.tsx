@@ -71,9 +71,13 @@ import { useTheme } from "@/components/theme-provider";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import BedtimeOutlinedIcon from "@mui/icons-material/BedtimeOutlined";
 import LeaderboardImage from "./components/LeaderboardImage/LeaderboardImage";
-import { PlayerProps } from "./interfaces/player";
+import { PlayerDetails, PlayerProps } from "./interfaces/player";
 import StartArea from "./components/StartArea/StartArea";
 import logo from "./assets/logo.png";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import dayjs from "dayjs";
 
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
@@ -86,8 +90,20 @@ function App() {
   const [currentRodada, setCurrentRodada] = useState(0);
   const [volumeState, setVolumeState] = useState(false);
   const [players, setPlayers] = useState<PlayerProps[]>([
-    { id: 0, name: "", points: 0, currentPoints: 0 },
-    { id: 1, name: "", points: 0, currentPoints: 0 },
+    {
+      id: 0,
+      name: "Player 1",
+      points: 0,
+      currentPoints: 0,
+      data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
+    },
+    {
+      id: 1,
+      name: "Player 2",
+      points: 0,
+      currentPoints: 0,
+      data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
+    },
   ]);
   const [modalSugest, setModalSugest] = useState(false);
   const [themeSugest, setThemeSugest] = useState<string[]>([]);
@@ -106,7 +122,11 @@ function App() {
   const [showInitialTimer, setShowInitialTimer] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const { theme, setTheme } = useTheme();
-
+  const [details, setDetails] = useState<PlayerDetails>({
+    state: false,
+    match: [],
+  });
+  const [endGame, setEndGame] = useState(false);
   const audio = new Audio(sirene);
 
   const {
@@ -145,6 +165,12 @@ function App() {
       synth.cancel();
     };
   }, [randomLetter]);
+
+  useEffect(() => {
+    if (endGame) {
+      setStart(false);
+    }
+  }, [endGame]);
 
   const getRandomLetter = () => {
     let index = Math.floor(Math.random() * 25);
@@ -197,7 +223,7 @@ function App() {
   }, [isDarkMode]);
 
   useEffect(() => {
-    setPaginationLeaderBoard(splitIntoGroups(leaderBoard, 3));
+    setPaginationLeaderBoard(splitIntoGroups(leaderBoard, 2));
   }, [start]);
 
   const handleSelectChange = (value: string) => {
@@ -211,9 +237,20 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
+    setEndGame(false);
+    setDetails({
+      state: false,
+      match: [],
+    });
+    setLeaderBoardModal(false);
     setPlayers((prevState) =>
       prevState.map((item) => {
-        return { name: item.name, points: 0, currentPoints: 0 };
+        return {
+          name: item.name,
+          points: 0,
+          currentPoints: 0,
+          data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
+        };
       })
     );
   };
@@ -225,6 +262,7 @@ function App() {
         name: `Player ${index + 1}`,
         points: 0,
         currentPoints: 0,
+        data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
       }))
     );
   };
@@ -256,11 +294,10 @@ function App() {
     } else {
       getRandomLetter();
     }
-
-    console.log(leaderBoard);
-    if (rodadas === currentRodada + 1) {
-      setLeaderBoard((prevState) => [...prevState, players]);
-      console.log("atualizado", leaderBoard);
+    if (rodadas === currentRodada) {
+      const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
+      setLeaderBoard((prevState) => [...prevState, sortedPlayers]);
+      setEndGame(true);
     }
 
     while (index != count) {
@@ -274,24 +311,19 @@ function App() {
       <div key={index}>
         <div className="player-input flex flex-col gap-2">
           {index === 0 && (
-            <div className="flex w-full gap-2 ">
-              <Button onClick={() => handleClick(players.length)}>
+            <div className="flex w-full gap-2">
+              <Button
+                onClick={() => handleClick(players.length)}
+                className="w-full"
+              >
                 {rodadas === currentRodada
                   ? "Finalizar partida"
                   : "Gerar próximo"}
               </Button>
               {currentRodada > 0 && (
-                <>
-                  <Button onClick={reset}>Reiniciar jogo</Button>
-                  <Button
-                    onClick={() => setTimeLeft(0)}
-                    variant={"destructive"}
-                    disabled={timeLeft === 0}
-                  >
-                    {/* Stop! */}
-                    <PanToolOutlinedIcon />
-                  </Button>
-                </>
+                <Button onClick={reset} className="w-full">
+                  Reiniciar jogo
+                </Button>
               )}
             </div>
           )}
@@ -317,15 +349,11 @@ function App() {
   };
 
   const getRandomThemes = (quantity: number) => {
-    console.log(quantity);
     let increment = 0;
     let index = Math.floor(Math.random() * 99);
     let newThemes: string[] = [];
 
     while (increment !== quantity) {
-      console.log(index);
-      console.log(temas[index]);
-
       if (!themeExclude.includes(temas[index])) {
         newThemes.push(temas[index]);
         increment++;
@@ -343,31 +371,53 @@ function App() {
   return (
     <div>
       {!start ? (
-        <StartArea setStart={setStart} />
-      ) : historyLetter.length === rodadas + 1 ? (
-        <AlertDialog open={true} onOpenChange={setAlert}>
-          <AlertDialogContent className="w-[95%] rounded-lg md:rounded-xl">
-            <AlertDialogHeader>
-              <AlertDialogTitle
-                className={`${theme === "dark" && "text-white"}`}
-              >
-                Fim de jogo
-              </AlertDialogTitle>
-              <Separator />
-              <AlertDialogDescription
-                className={`flex flex-col gap-3 ${
-                  theme === "dark" && "text-white"
-                }`}
-              >
-                {rodadas} rodadas atigidas
-                <LeaderboardImage
-                  data={leaderBoard[leaderBoard.length - 1]}
-                  onReset={reset}
-                />
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-          </AlertDialogContent>
-        </AlertDialog>
+        <>
+          <StartArea setStart={setStart} />
+
+          {endGame && (
+            <AlertDialog
+              open={historyLetter.length === rodadas + 1 || details.state}
+              onOpenChange={setAlert}
+            >
+              <AlertDialogContent className="w-[95%] rounded-lg md:rounded-xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle
+                    className={`${theme === "dark" && "text-white"}`}
+                  >
+                    {!details.state ? "Fim de jogo" : "Detalhes da partida"}
+                  </AlertDialogTitle>
+                  <Separator />
+                  <AlertDialogDescription
+                    className={`flex flex-col gap-3 ${
+                      theme === "dark" && "text-white"
+                    }`}
+                  >
+                    {!details.state && `${rodadas} rodadas atigidas`}
+                    <LeaderboardImage
+                      data={
+                        !details.state
+                          ? leaderBoard[leaderBoard.length - 1]
+                          : details.match
+                      }
+                      onClose={
+                        !details.state
+                          ? undefined
+                          : () => {
+                              setDetails({
+                                state: false,
+                                match: [],
+                              });
+                              setLeaderBoardModal(true);
+                            }
+                      }
+                      onReset={reset}
+                    />
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </>
       ) : (
         <div className="min-h-[90vh] box-border m-5 flex flex-col justify-between ">
           <div className="flex ">
@@ -589,7 +639,12 @@ function App() {
                         className="flex gap-4"
                         onClick={() =>
                           setPlayers([
-                            { name: "", points: 0, currentPoints: 0 },
+                            {
+                              name: "",
+                              points: 0,
+                              currentPoints: 0,
+                              data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
+                            },
                           ])
                         }
                       >
@@ -708,7 +763,9 @@ function App() {
           </div>
 
           <section className="w-full h-full flex flex-col justify-center items-center gap-4">
-            <img src={logo} alt="Logo Adedonha" className="h-24 w-24" />
+            {currentRodada === 0 && (
+              <img src={logo} alt="Logo Adedonha" className="h-24 w-24" />
+            )}
             <Separator />
             {currentRodada > 0 && (
               <ToggleGroup
@@ -751,69 +808,127 @@ function App() {
               <AlertDialogContent className="w-[80%] rounded-lg md:rounded-xl">
                 <AlertDialogHeader>
                   <AlertDialogTitle
-                    className={`${theme === "dark" && "text-white"}`}
+                    className={`${
+                      theme === "dark" && "text-white"
+                    } text-2xl font-semibold text-center`}
                   >
-                    Leaderboard
+                    Jogos Anteriores
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Placares dos jogos anteriores
-                    {paginationLeaderBoard[currentPaginatinationPage] !==
-                    undefined ? (
-                      paginationLeaderBoard[currentPaginatinationPage].map(
-                        (round, roundIndex) => (
-                          <div key={roundIndex} className="mb-4">
-                            <p className="text-lg font-bold">
-                              Jogo {roundIndex + 1}
-                            </p>
+                    <div className="p-2">
+                      {paginationLeaderBoard[currentPaginatinationPage] !==
+                      undefined ? (
+                        paginationLeaderBoard[currentPaginatinationPage].map(
+                          (round, roundIndex) => (
+                            <div
+                              key={roundIndex}
+                              className="bg-white rounded-md p-4 mb-4 drop-shadow-2xl hover:shadow-xl transition-shadow"
+                            >
+                              <ul className="space-y-2">
+                                {round.map((player: PlayerProps, index) => (
+                                  <div key={index}>
+                                    {index === 0 && (
+                                      <div className="flex gap-2 justify-between items-center">
+                                        <p className="text-sm font-bold text-blue-500 mb-3">
+                                          Jogo: <br />
+                                          {player.data}
+                                        </p>
 
-                            {round.map((player: PlayerProps) => (
-                              <p
-                                key={
-                                  player.id || `${player.name}-${roundIndex}`
+                                        <Button
+                                          variant={"outline"}
+                                          onClick={() => {
+                                            setDetails({
+                                              state: true,
+                                              match: round,
+                                            });
+                                            setLeaderBoardModal(false);
+                                          }}
+                                        >
+                                          <ShareOutlinedIcon />
+                                        </Button>
+                                      </div>
+                                    )}
+
+                                    <li
+                                      key={
+                                        player.id ||
+                                        `${player.name}-${roundIndex}`
+                                      }
+                                      className="flex justify-between items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors"
+                                    >
+                                      <span className="text-gray-800 font-medium">
+                                        {player.name}
+                                      </span>
+                                      <span className="text-green-500 font-bold">
+                                        {player.points}
+                                      </span>
+                                    </li>
+                                  </div>
+                                ))}
+                              </ul>
+                            </div>
+                          )
+                        )
+                      ) : (
+                        <p className="text-center text-gray-500">
+                          Sem dados anteriores
+                        </p>
+                      )}
+                    </div>
+
+                    {currentPaginatinationPage >= 0 && (
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              href="#"
+                              className={
+                                currentPaginatinationPage === 0
+                                  ? "pointer-events-none opacity-50"
+                                  : undefined
+                              }
+                              onClick={() =>
+                                setCurrentPaginationPage(
+                                  (prevState) => prevState - 1
+                                )
+                              }
+                            />
+                          </PaginationItem>
+
+                          <PaginationItem>
+                            <PaginationLink href="#" isActive>
+                              {currentPaginatinationPage + 1}
+                            </PaginationLink>
+                          </PaginationItem>
+
+                          {currentPaginatinationPage !==
+                            paginationLeaderBoard.length && (
+                            <PaginationItem>
+                              <PaginationLink
+                                href="#"
+                                className={
+                                  currentPaginatinationPage >
+                                  Math.ceil(leaderBoard.length / 2) - 2
+                                    ? "pointer-events-none opacity-50"
+                                    : undefined
+                                }
+                                onClick={() =>
+                                  setCurrentPaginationPage(
+                                    (prevState) => prevState + 1
+                                  )
                                 }
                               >
-                                {player.name} - {player.points}
-                              </p>
-                            ))}
-                          </div>
-                        )
-                      )
-                    ) : (
-                      <p>Sem dados anteriores</p>
-                    )}
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious
-                            href="#"
-                            className={
-                              currentPaginatinationPage <
-                                Math.ceil(leaderBoard.length / 3) - 1 ||
-                              currentPaginatinationPage === 0
-                                ? "pointer-events-none opacity-50"
-                                : undefined
-                            }
-                            onClick={() =>
-                              setCurrentPaginationPage(
-                                (prevState) => prevState - 1
-                              )
-                            }
-                          />
-                        </PaginationItem>
+                                {currentPaginatinationPage + 2}
+                              </PaginationLink>
+                            </PaginationItem>
+                          )}
 
-                        <PaginationItem>
-                          <PaginationLink href="#" isActive>
-                            {currentPaginatinationPage}
-                          </PaginationLink>
-                        </PaginationItem>
-
-                        {leaderBoard.length / 3 > 1 && (
                           <PaginationItem>
-                            <PaginationLink
+                            <PaginationNext
                               href="#"
                               className={
                                 currentPaginatinationPage >
-                                Math.ceil(leaderBoard.length / 3) - 2
+                                Math.ceil(leaderBoard.length / 2) - 2
                                   ? "pointer-events-none opacity-50"
                                   : undefined
                               }
@@ -822,38 +937,35 @@ function App() {
                                   (prevState) => prevState + 1
                                 )
                               }
-                            >
-                              {currentPaginatinationPage + 1}
-                            </PaginationLink>
+                            />
                           </PaginationItem>
-                        )}
-
-                        <PaginationItem>
-                          <PaginationNext
-                            href="#"
-                            className={
-                              currentPaginatinationPage >
-                              Math.ceil(leaderBoard.length / 3) - 2
-                                ? "pointer-events-none opacity-50"
-                                : undefined
-                            }
-                            onClick={() =>
-                              setCurrentPaginationPage(
-                                (prevState) => prevState + 1
-                              )
-                            }
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
+                        </PaginationContent>
+                      </Pagination>
+                    )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
 
-                <AlertDialogFooter>
-                  <AlertDialogAction onClick={() => setLeaderBoardModal(false)}>
-                    Fechar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
+                <div className="flex gap-2">
+                  <Button
+                    className="w-full flex gap-2"
+                    variant={"destructive"}
+                    onClick={() => {
+                      localStorage.removeItem("leaderboard");
+                      setPaginationLeaderBoard([]);
+                      setCurrentPaginationPage(0);
+                      setLeaderBoard([]);
+                    }}
+                  >
+                    <DeleteOutlineOutlinedIcon />
+                    Limpar historico
+                  </Button>
+                  <Button
+                    className="w-full flex gap-2"
+                    onClick={() => setLeaderBoardModal(false)}
+                  >
+                    <ClearOutlinedIcon /> Fechar
+                  </Button>
+                </div>
               </AlertDialogContent>
             </AlertDialog>
 
@@ -953,7 +1065,6 @@ function App() {
                         }}
                       />
                     </Button>
-                    {/* <Button onClick={reset}>Reiniciar jogo</Button> */}
                   </div>
                 )}
               </CardFooter>

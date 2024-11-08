@@ -8,7 +8,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlayerLeaderboard } from "@/interfaces/player";
 import ReplayOutlinedIcon from "@mui/icons-material/ReplayOutlined";
 
-const LeaderboardImage = ({ data, onReset }: PlayerLeaderboard) => {
+const LeaderboardImage = ({
+  data,
+  onReset,
+  onClose = undefined,
+}: PlayerLeaderboard) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const handleClick = useCallback(async () => {
@@ -122,12 +126,21 @@ const LeaderboardImage = ({ data, onReset }: PlayerLeaderboard) => {
           />{" "}
           Baixar
         </Button>
-        <Button onClick={onReset} variant={"destructive"}>
-          <ReplayOutlinedIcon
-            sx={{ width: "24px !important", height: "24px !important" }}
-          />{" "}
-          Reiniciar
-        </Button>
+        {onClose !== undefined ? (
+          <Button onClick={onClose} variant={"destructive"}>
+            <ReplayOutlinedIcon
+              sx={{ width: "24px !important", height: "24px !important" }}
+            />{" "}
+            Fechar
+          </Button>
+        ) : (
+          <Button onClick={onReset} variant={"destructive"}>
+            <ReplayOutlinedIcon
+              sx={{ width: "24px !important", height: "24px !important" }}
+            />{" "}
+            Reiniciar
+          </Button>
+        )}
       </div>
     </div>
   );
