@@ -156,7 +156,7 @@ function App() {
         voices.find(
           (v) => v.name === "Microsoft Daniel - Portuguese (Brazil)"
         ) || null;
-      if (volumeState && !endGame) {
+      if (volumeState && !endGame && start) {
         synth.speak(u);
       }
     }
