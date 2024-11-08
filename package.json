@@ -32,11 +32,13 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^11.11.11",
     "html-to-image": "^1.11.11",
+    "jspdf": "^2.5.2",
     "lucide-react": "^0.417.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-share": "^5.1.0",
     "react-share-pro": "^2.1.9-24",
+    "react-to-pdf": "^1.0.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "zustand": "^5.0.1"

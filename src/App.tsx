@@ -71,13 +71,17 @@ import { useTheme } from "@/components/theme-provider";
 import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 import BedtimeOutlinedIcon from "@mui/icons-material/BedtimeOutlined";
 import LeaderboardImage from "./components/LeaderboardImage/LeaderboardImage";
-import { PlayerDetails, PlayerProps } from "./interfaces/player";
+import { PlayerDetails, PlayerProps, TemplateState } from "./interfaces/player";
 import StartArea from "./components/StartArea/StartArea";
 import logo from "./assets/logo.png";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import dayjs from "dayjs";
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
+import TemplateBoard from "./components/TemplateBoard/TemplateBoard";
+import generatePDF, { Margin, Resolution } from "react-to-pdf";
+import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
 
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
@@ -127,7 +131,14 @@ function App() {
     match: [],
   });
   const [endGame, setEndGame] = useState(false);
+  const [template, setTemplate] = useState<TemplateState>({
+    state: false,
+    temas: [],
+    open: false,
+  });
+  const [currentSelectedTemas, setCurrentSelectedTemas] = useState("");
   const audio = new Audio(sirene);
+  console.log(template);
 
   const {
     excludesLetters,
@@ -231,7 +242,7 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
-    setEndGame(false)
+    setEndGame(false);
     setDetails({
       state: false,
       match: [],
@@ -259,6 +270,51 @@ function App() {
         data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
       }))
     );
+  };
+
+  const handleOpenTemplate = () => {
+    setTemplate((prevState) => ({
+      ...prevState,
+      state: !prevState.state,
+    }));
+  };
+
+  const options = {
+    method: "open",
+    resolution: Resolution.HIGH,
+    page: {
+      margin: Margin.NONE,
+      format: "A4",
+      orientation: "landscape",
+    },
+    canvas: {
+      mimeType: "image/png",
+      qualityRatio: 1,
+    },
+    overrides: {
+      pdf: {
+        compress: true,
+        background: true, // Aumenta a chance de capturar o fundo
+      },
+      canvas: {
+        useCORS: true,
+      },
+    },
+  } as any;
+
+  const getTargetElement = () => {
+    const element = document.getElementById("content-id");
+
+    if (element) {
+      element.style.width = "fit-content";
+      element.style.height = "auto";
+    }
+
+    return element;
+  };
+
+  const handleGeneratePDF = () => {
+    generatePDF(getTargetElement, options);
   };
 
   const handleScoreChange = (index: number, value: number) => {
@@ -365,7 +421,9 @@ function App() {
   return (
     <div>
       {!start ? (
-        <StartArea setStart={setStart} />
+        <>
+          <StartArea setStart={setStart} />
+        </>
       ) : (
         <div className="min-h-[90vh] box-border m-5 flex flex-col justify-between ">
           <div className="flex ">
@@ -600,20 +658,37 @@ function App() {
                         <PersonOffOutlinedIcon /> Limpar nome dos jogadores
                       </Button>
 
-                      <Button
-                        className="flex gap-4"
-                        onClick={() => setIsDarkMode((prevState) => !prevState)}
-                      >
-                        {theme === "light" ? (
-                          <>
-                            <BedtimeOutlinedIcon /> Modo escuro
-                          </>
-                        ) : (
-                          <>
-                            <WbSunnyOutlinedIcon /> Modo claro
-                          </>
-                        )}
-                      </Button>
+                      <div className="w-full flex gap-2">
+                        <Button
+                          className="flex gap-4 w-full"
+                          onClick={() =>
+                            setIsDarkMode((prevState) => !prevState)
+                          }
+                        >
+                          {theme === "light" ? (
+                            <>
+                              <BedtimeOutlinedIcon
+                                sx={{
+                                  width: "20px !important",
+                                  height: "20px !important",
+                                }}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <WbSunnyOutlinedIcon />
+                            </>
+                          )}
+                        </Button>
+
+                        <Button
+                          className="flex gap-4"
+                          onClick={handleOpenTemplate}
+                        >
+                          Gerar template
+                        </Button>
+                      </div>
+
                       <div className="flex justify-center flex-col items-center gap-2">
                         <div className="flex gap-2 items-center">
                           <p>Exibir contagem regressiva</p>
@@ -914,6 +989,123 @@ function App() {
                   >
                     <ClearOutlinedIcon /> Fechar
                   </Button>
+                </div>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog
+              open={template.state}
+              onOpenChange={handleOpenTemplate}
+            >
+              <AlertDialogContent className="w-[90%] rounded-lg md:rounded-xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle
+                    className={`${
+                      theme === "dark" && "text-white"
+                    } text-2xl font-semibold text-center`}
+                  >
+                    Gerar template
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="w-full">
+                    {template.open ? (
+                      <>
+                        <div className="w-[300px] absolute top-[-9999px]">
+                          <TemplateBoard
+                            temas={template.temas}
+                            callbackPDF={handleGeneratePDF}
+                          />
+                        </div>
+
+                        <div className="flex flex-col justify-center items-center gap-2">
+                          <img
+                            src={logo}
+                            alt="Logo Adedonha"
+                            className="h-24 w-24"
+                          />
+
+                          <h1>
+                            Sua template foi gerada com sucesso! Baixe agora,
+                            imprima e se divirta!
+                          </h1>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <p>
+                          Digite os temas para gerar a template, separados por
+                          virgula. Gere facilmente uma ficha para jogar!
+                        </p>
+                        <Input
+                          className="w-full"
+                          value={currentSelectedTemas}
+                          onChange={(e) => {
+                            setCurrentSelectedTemas(e.target.value);
+                            e.target.value = "";
+                          }}
+                        />
+                      </div>
+                    )}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <div className="flex gap-2">
+                  {template.open ? (
+                    <>
+                      <Button onClick={handleGeneratePDF} variant={"outline"}>
+                        <PictureAsPdfOutlinedIcon /> Download template
+                      </Button>
+                      <Button
+                        className="w-full flex gap-2"
+                        variant={"outline"}
+                        onClick={() =>
+                          setTemplate({
+                            state: false,
+                            temas: [],
+                            open: false,
+                          })
+                        }
+                      >
+                        <ClearOutlinedIcon /> Fechar
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {" "}
+                      <Button
+                        className="w-full flex gap-2"
+                        variant={"default"}
+                        onClick={() => {
+                          const splitVirgula = currentSelectedTemas
+                            .split(",")
+                            .map((item) => item.trim())
+                            .filter((item) => item !== "");
+                          console.log(splitVirgula);
+                          setTemplate((prevState) => ({
+                            ...prevState,
+                            temas: [...prevState.temas, ...splitVirgula],
+                            open: true,
+                          }));
+                          setCurrentSelectedTemas("");
+                        }}
+                      >
+                        <SaveOutlinedIcon />
+                        Salvar
+                      </Button>
+                      <Button
+                        className="w-full flex gap-2"
+                        variant={"outline"}
+                        onClick={() =>
+                          setTemplate({
+                            state: false,
+                            temas: [],
+                            open: false,
+                          })
+                        }
+                      >
+                        <ClearOutlinedIcon /> Fechar
+                      </Button>
+                    </>
+                  )}
                 </div>
               </AlertDialogContent>
             </AlertDialog>

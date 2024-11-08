@@ -13,6 +13,17 @@ export interface PlayerLeaderboard {
 }
 
 export interface PlayerDetails {
-  state: boolean
-  match: PlayerProps[]
+  state: boolean;
+  match: PlayerProps[];
+}
+
+export interface TemplateState {
+  state: boolean;
+  temas: string[];
+  open: boolean;
+}
+
+export interface TemplateThemes {
+  temas: string[];
+  callbackPDF: any;
 }
