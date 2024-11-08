@@ -14,22 +14,21 @@ const TemplateBoard = ({ temas, callbackPDF }: TemplateThemes) => {
           backgroundPosition: "bottom right",
           backgroundRepeat: "no-repeat",
           backgroundSize: "150px",
-          backgroundPositionX: "1150px",
           opacity: 0.5,
         }}
       >
-        <table className="min-w-full h-full bg-transparent rounded-lg shadow-lg">
-          <thead className="p-6">
-            <tr className="flex items-center justify-center">
+        <table className="table-fixed w-full h-full bg-transparent rounded-lg shadow-lg">
+          <thead className="p-6 w-full">
+            <tr>
               {temas.map((item) => (
                 <th
                   key={item}
-                  className="py-4 px-10 border-b-2 flex items-center justify-center text-left font-semibold text-gray-600 border-r-2"
+                  className="w-1/6 py-4 px-8 border-b-2 text-center font-semibold text-gray-600 border-r-2"
                 >
-                  {item}
+                  {item.charAt(0).toLocaleUpperCase() + item.slice(1)}
                 </th>
               ))}
-              <th className="py-4 px-10 border-b-2 text-left font-semibold text-gray-600 border-r-2">
+              <th className="w-1/6 py-4 px-10 border-b-2 text-center font-semibold text-gray-600 border-r-2">
                 Total
               </th>
             </tr>
@@ -49,7 +48,7 @@ const TemplateBoard = ({ temas, callbackPDF }: TemplateThemes) => {
           </tbody>
         </table>
 
-        <div className="absolute z-10 bottom-0 w-full flex justify-center">
+        <div className="absolute z-10 bottom-2 w-full flex justify-center">
           <div className="flex flex-col justify-end items-center">
             <footer className="w-full pb-4">
               <div className="flex flex-col justify-end space-y-2">

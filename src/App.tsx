@@ -138,7 +138,6 @@ function App() {
   });
   const [currentSelectedTemas, setCurrentSelectedTemas] = useState("");
   const audio = new Audio(sirene);
-  console.log(template);
 
   const {
     excludesLetters,
@@ -306,8 +305,8 @@ function App() {
     const element = document.getElementById("content-id");
 
     if (element) {
-      element.style.width = "fit-content";
-      element.style.height = "auto";
+      element.style.width = "1200px";
+      element.style.height = "847px";
     }
 
     return element;
@@ -1035,6 +1034,7 @@ function App() {
                         <p>
                           Digite os temas para gerar a template, separados por
                           virgula. Gere facilmente uma ficha para jogar!
+                          <br />
                         </p>
                         <Input
                           className="w-full"
@@ -1044,6 +1044,7 @@ function App() {
                             e.target.value = "";
                           }}
                         />
+                        <p className="text-xs">*Recomendamos templates com no máximo 9 temas.</p>
                       </div>
                     )}
                   </AlertDialogDescription>
