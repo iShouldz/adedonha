@@ -231,6 +231,7 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
+    setEndGame(false)
     setDetails({
       state: false,
       match: [],
