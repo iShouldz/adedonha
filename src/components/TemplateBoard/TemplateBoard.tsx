@@ -35,7 +35,7 @@ const TemplateBoard = ({ temas, callbackPDF }: TemplateThemes) => {
           <tbody className="w-full">
             {(() => {
               let rows = [];
-              for (let i = 0; i < 16; i++) {
+              for (let i = 0; i < 14; i++) {
                 rows.push(
                   <tr key={i} className="border-b hover:bg-gray-50">
                     <td className="py-6 px-6"></td>
