@@ -137,7 +137,7 @@ function App() {
   } = useExcludeLetters();
 
   useEffect(() => {
-    if (timeLeft > 0) {
+    if (timeLeft > 0 && !endGame) {
       const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timerId);
     }
@@ -156,7 +156,7 @@ function App() {
         voices.find(
           (v) => v.name === "Microsoft Daniel - Portuguese (Brazil)"
         ) || null;
-      if (volumeState) {
+      if (volumeState && !endGame) {
         synth.speak(u);
       }
     }
@@ -165,12 +165,6 @@ function App() {
       synth.cancel();
     };
   }, [randomLetter]);
-
-  useEffect(() => {
-    if (endGame) {
-      setStart(false);
-    }
-  }, [endGame]);
 
   const getRandomLetter = () => {
     let index = Math.floor(Math.random() * 25);
@@ -237,7 +231,6 @@ function App() {
     setTimeLeft(-1);
     setStart(false);
     setCurrentRodada(0);
-    setEndGame(false);
     setDetails({
       state: false,
       match: [],
@@ -371,53 +364,7 @@ function App() {
   return (
     <div>
       {!start ? (
-        <>
-          <StartArea setStart={setStart} />
-
-          {endGame && (
-            <AlertDialog
-              open={historyLetter.length === rodadas + 1 || details.state}
-              onOpenChange={setAlert}
-            >
-              <AlertDialogContent className="w-[95%] rounded-lg md:rounded-xl">
-                <AlertDialogHeader>
-                  <AlertDialogTitle
-                    className={`${theme === "dark" && "text-white"}`}
-                  >
-                    {!details.state ? "Fim de jogo" : "Detalhes da partida"}
-                  </AlertDialogTitle>
-                  <Separator />
-                  <AlertDialogDescription
-                    className={`flex flex-col gap-3 ${
-                      theme === "dark" && "text-white"
-                    }`}
-                  >
-                    {!details.state && `${rodadas} rodadas atigidas`}
-                    <LeaderboardImage
-                      data={
-                        !details.state
-                          ? leaderBoard[leaderBoard.length - 1]
-                          : details.match
-                      }
-                      onClose={
-                        !details.state
-                          ? undefined
-                          : () => {
-                              setDetails({
-                                state: false,
-                                match: [],
-                              });
-                              setLeaderBoardModal(true);
-                            }
-                      }
-                      onReset={reset}
-                    />
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </>
+        <StartArea setStart={setStart} />
       ) : (
         <div className="min-h-[90vh] box-border m-5 flex flex-col justify-between ">
           <div className="flex ">
@@ -544,7 +491,8 @@ function App() {
                 theme === "dark" && "text-white"
               }`}
             >
-              Rodada:{currentRodada}/{rodadas}
+              Rodada:{currentRodada > rodadas ? rodadas : currentRodada}/
+              {rodadas}
             </h2>
 
             <Sheet>
@@ -977,6 +925,48 @@ function App() {
                   </AlertDialogTitle>
                   <AlertDialogDescription className="text-5xl font-extrabold animate-ping shadow-slate-700 text-white">
                     {valueTimer}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog
+              open={historyLetter.length === rodadas + 1 || details.state}
+              onOpenChange={setAlert}
+            >
+              <AlertDialogContent className="w-[95%] rounded-lg md:rounded-xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle
+                    className={`${theme === "dark" && "text-white"}`}
+                  >
+                    {!details.state ? "Fim de jogo" : "Detalhes da partida"}
+                  </AlertDialogTitle>
+                  <Separator />
+                  <AlertDialogDescription
+                    className={`flex flex-col gap-3 ${
+                      theme === "dark" && "text-white"
+                    }`}
+                  >
+                    {!details.state && `${rodadas} rodadas atigidas`}
+                    <LeaderboardImage
+                      data={
+                        !details.state
+                          ? leaderBoard[leaderBoard.length - 1]
+                          : details.match
+                      }
+                      onClose={
+                        !details.state
+                          ? undefined
+                          : () => {
+                              setDetails({
+                                state: false,
+                                match: [],
+                              });
+                              setLeaderBoardModal(true);
+                            }
+                      }
+                      onReset={reset}
+                    />
                   </AlertDialogDescription>
                 </AlertDialogHeader>
               </AlertDialogContent>
