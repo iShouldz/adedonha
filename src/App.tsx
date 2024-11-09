@@ -139,6 +139,7 @@ function App() {
   });
   const [currentSelectedTemas, setCurrentSelectedTemas] = useState("");
   const audio = new Audio(sirene);
+  console.log(players)
 
   const {
     excludesLetters,
@@ -697,16 +698,20 @@ function App() {
 
                       <Button
                         className="flex gap-4"
-                        onClick={() =>
-                          setPlayers([
-                            {
+                        onClick={() => {
+                          const cleanPlayer = players.map((player) => {
+                            console.log(player)
+                            return {
                               name: "",
-                              points: 0,
-                              currentPoints: 0,
-                              data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
-                            },
-                          ])
-                        }
+                              points: player.points,
+                              currentPoints: player.currentPoints,
+                              data: player.data,
+                              id: player.id,
+                            };
+                          });
+                          console.log(cleanPlayer);
+                          setPlayers(cleanPlayer);
+                        }}
                       >
                         <PersonOffOutlinedIcon /> Limpar nome dos jogadores
                       </Button>
