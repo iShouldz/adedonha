@@ -69,7 +69,7 @@
 }
 
 .overflow-auto-important {
-  overflow-y: auto !important;
+  overflow: auto !important;
   -webkit-overflow-scrolling: touch !important;
   min-height: fit-content !important;
   max-height: 190px !important;
