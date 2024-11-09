@@ -82,7 +82,7 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import TemplateBoard from "./components/TemplateBoard/TemplateBoard";
 import generatePDF, { Margin, Resolution } from "react-to-pdf";
 import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
-import stopAlert from "./assets/stopAlert.svg";
+import stopAlert from "./assets/stopAlert.png";
 
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
