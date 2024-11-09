@@ -552,7 +552,7 @@ function App() {
               }`}
             >
               Rodada:{currentRodada > rodadas ? rodadas : currentRodada}/
-              {rodadas}
+              {rodadas} aa
             </h2>
 
             <Sheet>
