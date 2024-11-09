@@ -872,10 +872,7 @@ function App() {
                               key={roundIndex}
                               className="bg-muted rounded-md p-4 mb-4 drop-shadow-2xl hover:shadow-xl transition-shadow"
                             >
-                              <ul
-                                className="space-y-2 min-h-fit max-h-[190px] overflow-hidden overflow-y-auto"
-                                style={{ WebkitOverflowScrolling: "touch" }}
-                              >
+                              <ul className="space-y-2 min-h-fit max-h-[190px] overflow-hidden overflow-auto-important">
                                 {" "}
                                 {round.map((player: PlayerProps, index) => (
                                   <div key={index}>

@@ -67,3 +67,8 @@
     @apply bg-muted ;
   }
 }
+
+.overflow-auto-important {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
