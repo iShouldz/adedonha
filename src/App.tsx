@@ -82,7 +82,7 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import TemplateBoard from "./components/TemplateBoard/TemplateBoard";
 import generatePDF, { Margin, Resolution } from "react-to-pdf";
 import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
-import stopAlert from "./assets/stopAlert.png";
+import stopAlert from "./assets/stopAlert.svg";
 
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
@@ -872,7 +872,7 @@ function App() {
                               key={roundIndex}
                               className="bg-muted rounded-md p-4 mb-4 drop-shadow-2xl hover:shadow-xl transition-shadow"
                             >
-                              <ul className="space-y-2 min-h-fit max-h-[190px] overflow-hidden overflow-auto-important">
+                              <ul className="space-y-2 overflow-hidden overflow-auto-important">
                                 {" "}
                                 {round.map((player: PlayerProps, index) => (
                                   <div key={index}>
