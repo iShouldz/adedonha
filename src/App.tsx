@@ -853,7 +853,7 @@ function App() {
               open={leaderBoardModal}
               onOpenChange={setLeaderBoardModal}
             >
-              <AlertDialogContent className="w-[80%] rounded-lg md:rounded-xl overflow-y-auto h-full">
+              <AlertDialogContent className="w-[80%] rounded-lg md:rounded-xl">
                 <AlertDialogHeader>
                   <AlertDialogTitle
                     className={`${
@@ -872,7 +872,7 @@ function App() {
                               key={roundIndex}
                               className="bg-muted rounded-md p-4 mb-4 drop-shadow-2xl hover:shadow-xl transition-shadow"
                             >
-                              <ul className="space-y-2 ">
+                              <ul className="space-y-2 min-h-fit max-h-[190px] overflow-hidden overflow-y-auto">
                                 {round.map((player: PlayerProps, index) => (
                                   <div key={index}>
                                     {index === 0 && (
