@@ -73,4 +73,8 @@
   -webkit-overflow-scrolling: touch !important;
   min-height: fit-content !important;
   max-height: 190px !important;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
