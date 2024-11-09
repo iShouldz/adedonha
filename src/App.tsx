@@ -139,7 +139,6 @@ function App() {
   });
   const [currentSelectedTemas, setCurrentSelectedTemas] = useState("");
   const audio = new Audio(sirene);
-  console.log(players)
 
   const {
     excludesLetters,
@@ -700,7 +699,6 @@ function App() {
                         className="flex gap-4"
                         onClick={() => {
                           const cleanPlayer = players.map((player) => {
-                            console.log(player)
                             return {
                               name: "",
                               points: player.points,
@@ -709,7 +707,6 @@ function App() {
                               id: player.id,
                             };
                           });
-                          console.log(cleanPlayer);
                           setPlayers(cleanPlayer);
                         }}
                       >
@@ -856,7 +853,7 @@ function App() {
               open={leaderBoardModal}
               onOpenChange={setLeaderBoardModal}
             >
-              <AlertDialogContent className="w-[80%] rounded-lg md:rounded-xl">
+              <AlertDialogContent className="w-[80%] rounded-lg md:rounded-xl overflow-y-auto h-full">
                 <AlertDialogHeader>
                   <AlertDialogTitle
                     className={`${
@@ -866,7 +863,7 @@ function App() {
                     Jogos Anteriores
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    <div className="p-2">
+                    <div className="p-2 ">
                       {paginationLeaderBoard[currentPaginatinationPage] !==
                       undefined ? (
                         paginationLeaderBoard[currentPaginatinationPage].map(
@@ -875,7 +872,7 @@ function App() {
                               key={roundIndex}
                               className="bg-muted rounded-md p-4 mb-4 drop-shadow-2xl hover:shadow-xl transition-shadow"
                             >
-                              <ul className="space-y-2">
+                              <ul className="space-y-2 ">
                                 {round.map((player: PlayerProps, index) => (
                                   <div key={index}>
                                     {index === 0 && (
@@ -1176,11 +1173,7 @@ function App() {
                   >
                     {!details.state && `${rodadas} rodadas atigidas`}
                     <LeaderboardImage
-                      data={
-                        !details.state
-                          ? leaderBoard[leaderBoard.length - 1]
-                          : details.match
-                      }
+                      data={!details.state ? leaderBoard[0] : details.match}
                       onClose={
                         !details.state
                           ? undefined
