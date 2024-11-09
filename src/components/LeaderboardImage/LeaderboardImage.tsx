@@ -96,10 +96,10 @@ const LeaderboardImage = ({
               <div className="bg-yellow-600 text-gray-700 p-4 w-20 h-28 rounded-md flex flex-col items-center justify-center">
                 <Avatar
                   src={`https://robohash.org/${data[2].name}.png?set=set4`}
-                  sx={{ width: 56, height: 56 }}
+                  sx={{ width: 46, height: 46 }}
                 />
                 <p className="font-semibold">{data[2].name}</p>
-                <p className="text-green-500 font-bold">{data[2].points}</p>
+                <p className="text-green-800 font-bold">{data[2].points}</p>
               </div>
             </div>
           )}
