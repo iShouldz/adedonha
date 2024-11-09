@@ -4,9 +4,10 @@ import { useCallback, useRef } from "react";
 import download from "downloadjs";
 import { Button } from "../ui/button";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlayerLeaderboard } from "@/interfaces/player";
 import ReplayOutlinedIcon from "@mui/icons-material/ReplayOutlined";
+import { Avatar } from "@mui/material";
 
 const LeaderboardImage = ({
   data,
@@ -68,13 +69,11 @@ const LeaderboardImage = ({
         <div className="flex items-end justify-center space-x-4 py-6">
           <div className="flex flex-col items-center space-y-2">
             <span className="font-bold text-gray-500 text-lg">🥈 2º</span>
-            <div className="bg-gray-400 text-gray-700 p-4 w-20 h-32 rounded-md flex flex-col items-center justify-center">
-              <Avatar>
-                <AvatarImage
-                  src={`https://robohash.org/${data[1].name}.png?set=set4`}
-                />
-                <AvatarFallback>{data[1].name[0]}</AvatarFallback>
-              </Avatar>
+            <div className="bg-gray-400 text-gray-700 p-4 w-24 h-32 rounded-md flex flex-col items-center justify-center">
+              <Avatar
+                src={`https://robohash.org/${data[1].name}.png?set=set4`}
+                sx={{ width: 56, height: 56 }}
+              />
               <p className="font-semibold">{data[1].name}</p>
               <p className="text-green-300 font-bold">{data[1].points}</p>
             </div>
@@ -83,12 +82,10 @@ const LeaderboardImage = ({
           <div className="flex flex-col items-center space-y-2">
             <span className="font-bold text-yellow-500 text-xl">🥇 1º</span>
             <div className="bg-yellow-400 text-gray-700 p-4 w-24 h-40 rounded-md flex flex-col items-center justify-center shadow-lg">
-              <Avatar>
-                <AvatarImage
-                  src={`https://robohash.org/${data[0].name}.png?set=set4`}
-                />
-                <AvatarFallback>{data[0].name[0]}</AvatarFallback>
-              </Avatar>
+              <Avatar
+                src={`https://robohash.org/${data[0].name}.png?set=set4`}
+                sx={{ width: 56, height: 56 }}
+              />
               <p className="font-semibold">{data[0].name}</p>
               <p className="text-green-500 font-bold">{data[0].points}</p>
             </div>
@@ -97,12 +94,10 @@ const LeaderboardImage = ({
             <div className="flex flex-col items-center space-y-2">
               <span className="font-bold text-yellow-800 text-lg">🥉 3º</span>
               <div className="bg-yellow-600 text-gray-700 p-4 w-20 h-28 rounded-md flex flex-col items-center justify-center">
-                <Avatar>
-                  <AvatarImage
-                    src={`https://robohash.org/${data[2].name}.png?set=set4`}
-                  />
-                  <AvatarFallback>{data[2].name[0]}</AvatarFallback>
-                </Avatar>
+                <Avatar
+                  src={`https://robohash.org/${data[2].name}.png?set=set4`}
+                  sx={{ width: 56, height: 56 }}
+                />
                 <p className="font-semibold">{data[2].name}</p>
                 <p className="text-green-500 font-bold">{data[2].points}</p>
               </div>

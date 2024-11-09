@@ -138,6 +138,7 @@ function App() {
   });
   const [currentSelectedTemas, setCurrentSelectedTemas] = useState("");
   const audio = new Audio(sirene);
+  console.log(players);
 
   const {
     excludesLetters,
@@ -580,7 +581,14 @@ function App() {
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Rodadas" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                          ref={(ref) => {
+                            if (!ref) return;
+                            ref.ontouchstart = (e) => {
+                              e.preventDefault();
+                            };
+                          }}
+                        >
                           <SelectItem value="2">2 rodadas</SelectItem>
                           <SelectItem value="3">3 rodadas</SelectItem>
                           <SelectItem value="4">4 rodadas</SelectItem>
@@ -602,7 +610,14 @@ function App() {
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Timer" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                          ref={(ref) => {
+                            if (!ref) return;
+                            ref.ontouchstart = (e) => {
+                              e.preventDefault();
+                            };
+                          }}
+                        >
                           <SelectItem value="30">30 segundos</SelectItem>
                           <SelectItem value="60">60 segundos</SelectItem>
                           <SelectItem value="90" className="flex gap-2">
@@ -630,7 +645,14 @@ function App() {
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Jogadores" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                          ref={(ref) => {
+                            if (!ref) return;
+                            ref.ontouchstart = (e) => {
+                              e.preventDefault();
+                            };
+                          }}
+                        >
                           <SelectItem value="2">2</SelectItem>
                           <SelectItem value="3">3</SelectItem>
                           <SelectItem value="4">4</SelectItem>
@@ -641,22 +663,6 @@ function App() {
                       </Select>
 
                       <Separator />
-
-                      <Button
-                        className="flex gap-4"
-                        onClick={() =>
-                          setPlayers([
-                            {
-                              name: "",
-                              points: 0,
-                              currentPoints: 0,
-                              data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
-                            },
-                          ])
-                        }
-                      >
-                        <PersonOffOutlinedIcon /> Limpar nome dos jogadores
-                      </Button>
 
                       <div className="w-full flex gap-2">
                         <Button
@@ -688,6 +694,22 @@ function App() {
                           Gerar template
                         </Button>
                       </div>
+
+                      <Button
+                        className="flex gap-4"
+                        onClick={() =>
+                          setPlayers([
+                            {
+                              name: "",
+                              points: 0,
+                              currentPoints: 0,
+                              data: dayjs(dayjs()).format("DD/MM/YYYY - HH:mm"),
+                            },
+                          ])
+                        }
+                      >
+                        <PersonOffOutlinedIcon /> Limpar nome dos jogadores
+                      </Button>
 
                       <div className="flex justify-center flex-col items-center gap-2">
                         <div className="flex gap-2 items-center">
@@ -846,7 +868,7 @@ function App() {
                           (round, roundIndex) => (
                             <div
                               key={roundIndex}
-                              className="bg-white rounded-md p-4 mb-4 drop-shadow-2xl hover:shadow-xl transition-shadow"
+                              className="bg-muted rounded-md p-4 mb-4 drop-shadow-2xl hover:shadow-xl transition-shadow"
                             >
                               <ul className="space-y-2">
                                 {round.map((player: PlayerProps, index) => (
@@ -859,7 +881,7 @@ function App() {
                                         </p>
 
                                         <Button
-                                          variant={"outline"}
+                                          variant={"ghost"}
                                           onClick={() => {
                                             setDetails({
                                               state: true,
@@ -878,7 +900,11 @@ function App() {
                                         player.id ||
                                         `${player.name}-${roundIndex}`
                                       }
-                                      className="flex justify-between items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors"
+                                      className={`flex justify-between items-center p-2 rounded-md transition-colors ${
+                                        theme === "dark"
+                                          ? "bg-white"
+                                          : "bg-gray-200"
+                                      }`}
                                     >
                                       <span className="text-gray-800 font-medium">
                                         {player.name}
@@ -1044,7 +1070,9 @@ function App() {
                             e.target.value = "";
                           }}
                         />
-                        <p className="text-xs">*Recomendamos templates com no máximo 9 temas.</p>
+                        <p className="text-xs">
+                          *Recomendamos templates com no máximo 9 temas.
+                        </p>
                       </div>
                     )}
                   </AlertDialogDescription>
@@ -1053,12 +1081,11 @@ function App() {
                 <div className="flex gap-2">
                   {template.open ? (
                     <>
-                      <Button onClick={handleGeneratePDF} variant={"outline"}>
+                      <Button onClick={handleGeneratePDF} variant={"secondary"}>
                         <PictureAsPdfOutlinedIcon /> Download template
                       </Button>
                       <Button
-                        className="w-full flex gap-2"
-                        variant={"outline"}
+                        className={`w-full flex gap-2 `}
                         onClick={() =>
                           setTemplate({
                             state: false,
@@ -1095,7 +1122,7 @@ function App() {
                       </Button>
                       <Button
                         className="w-full flex gap-2"
-                        variant={"outline"}
+                        variant={"secondary"}
                         onClick={() =>
                           setTemplate({
                             state: false,
