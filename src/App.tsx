@@ -883,7 +883,7 @@ function App() {
                                       <div className="flex gap-2 justify-between items-center">
                                         <p className="text-sm font-bold text-blue-500 mb-3">
                                           Jogo: <br />
-                                          {player.data}
+                                          {player.data} a
                                         </p>
 
                                         <Button
