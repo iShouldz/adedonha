@@ -38,6 +38,7 @@
     "react-dom": "^18.3.1",
     "react-share": "^5.1.0",
     "react-share-pro": "^2.1.9-24",
+    "react-simple-typewriter": "^5.0.1",
     "react-to-pdf": "^1.0.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",

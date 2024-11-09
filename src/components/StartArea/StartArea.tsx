@@ -3,6 +3,7 @@ import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { startAreaProps } from "@/interfaces/start";
 import stop from "../../assets/stop.png";
+import { Typewriter } from "react-simple-typewriter";
 
 const StartArea = ({ setStart }: startAreaProps) => {
   const { theme } = useTheme();
@@ -21,13 +22,23 @@ const StartArea = ({ setStart }: startAreaProps) => {
           Adedonha
         </h1>
         <Separator />
+
         <p
           className={`font-extrabold tracking-tight text-xl ${
             theme === "dark" && "text-white"
           }`}
         >
-          O classico, só que moderno.
+          <Typewriter
+            words={["O classico, só que moderno."]}
+            loop={false}
+            cursor
+            cursorStyle="|"
+            typeSpeed={70}
+            deleteSpeed={50}
+            delaySpeed={3000}
+          />
         </p>
+
         <img src={stop} />
 
         <Button
