@@ -82,6 +82,7 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import TemplateBoard from "./components/TemplateBoard/TemplateBoard";
 import generatePDF, { Margin, Resolution } from "react-to-pdf";
 import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
+import stopAlert from "./assets/stopAlert.png";
 
 function App() {
   const [randomLetter, setRandomLetter] = useState<string>("");
@@ -138,7 +139,6 @@ function App() {
   });
   const [currentSelectedTemas, setCurrentSelectedTemas] = useState("");
   const audio = new Audio(sirene);
-  console.log(players);
 
   const {
     excludesLetters,
@@ -347,7 +347,7 @@ function App() {
     }
     if (rodadas === currentRodada) {
       const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
-      setLeaderBoard((prevState) => [...prevState, sortedPlayers]);
+      setLeaderBoard((prevState) => [sortedPlayers, ...prevState]);
       setEndGame(true);
     }
 
@@ -835,10 +835,10 @@ function App() {
                   <AlertDialogTitle
                     className={`${theme === "dark" && "text-white"}`}
                   >
-                    STOPPPPP
+                    <img src={stopAlert} alt="alert" />
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    PAREM AS CANETAS!!! ACABOU O TEMPO
+                    PAREM AS CANETAS! <br /> ACABOU O TEMPO
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
